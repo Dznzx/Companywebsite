@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veltron WorkOS — AI-Native Workplace Suite</title>
+<meta name="description" content="Meeting summaries, task automation, document drafting. AI-native productivity for teams who can't afford enterprise tooling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#04060f;--s1:#080c18;--s2:#0d1220;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--white:#eef0f8;--muted:#4a5070;--muted2:#7a82a0;--blue:#8b5cf6;--purple:#a855f7;--cyan:#5b7fff;--green:#4ade80}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;font-weight:400;overflow-x:hidden;cursor:none}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:99997}
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--blue);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cur-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(139,92,246,.4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .3s,height .3s,border-color .3s}
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));z-index:10001;width:0%;transition:width .1s linear}
+#c{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.38}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
+nav.s{background:rgba(4,6,15,.82);backdrop-filter:blur(24px);border-color:var(--border)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white)}
+.nmark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff}
+.nname{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.02em}
+.nback{font-size:12px;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;border:1px solid var(--border);padding:6px 14px;border-radius:8px}
+.nback:hover{color:var(--white);border-color:var(--border2)}
+.nbtn{font-size:13px;font-weight:500;padding:8px 20px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 28px rgba(139,92,246,.25);display:inline-block}
+.nbtn:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(139,92,246,.45)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border:none;background:none}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--muted2);transition:all .3s;border-radius:2px}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+#drawer{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--s1);border-left:1px solid var(--border);z-index:999;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);padding:80px 32px 40px;display:flex;flex-direction:column;gap:8px}
+#drawer.open{transform:translateX(0)}
+.drawer-link{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--muted2);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transition:color .2s}
+.drawer-link:hover{color:var(--white)}
+.drawer-cta{margin-top:24px;padding:14px 20px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;font-size:14px;font-weight:500;text-align:center;display:block}
+#overlay{position:fixed;inset:0;background:rgba(4,6,15,.7);z-index:998;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.on{opacity:1;pointer-events:all}
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 60px;position:relative;overflow:hidden;z-index:1}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(139,92,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 40%,black,transparent)}
+.hglow{position:absolute;width:800px;height:600px;top:50%;left:50%;transform:translate(-50%,-60%);background:radial-gradient(ellipse,rgba(139,92,246,.13) 0%,rgba(91,127,255,.06) 40%,transparent 70%);pointer-events:none;animation:hg 7s ease-in-out infinite alternate}
+@keyframes hg{from{transform:translate(-50%,-60%) scale(1)}to{transform:translate(-50%,-58%) scale(1.1)}}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#fbbf24;border:1px solid rgba(251,191,36,.2);padding:5px 14px;border-radius:100px;background:rgba(251,191,36,.06);margin-bottom:28px;opacity:0;animation:ri .7s .1s forwards}
+.cdot{width:5px;height:5px;border-radius:50%;background:#fbbf24;animation:blk 2s infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.3}}
+.htitle{font-family:'Syne',sans-serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:24px;opacity:0;animation:ri .9s .3s forwards}
+.tg{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.hsub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--muted2);max-width:480px;margin:0 auto 36px;line-height:1.75;font-weight:300;opacity:0;animation:ri .9s .5s forwards}
+.hbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:ri .9s .65s forwards;margin-bottom:64px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 36px rgba(139,92,246,.25);cursor:none}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(139,92,246,.5)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:var(--white);border:1px solid var(--border2);text-decoration:none;transition:background .2s,border-color .2s,transform .2s;cursor:none}
+.btn-g:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
+.arr{transition:transform .2s}.btn-p:hover .arr,.btn-g:hover .arr{transform:translateX(3px)}
+@keyframes ri{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.mockup{opacity:0;animation:ri .9s .8s forwards;max-width:860px;width:100%;position:relative}
+.mglow{position:absolute;inset:-40px;background:radial-gradient(ellipse at 50% 50%,rgba(139,92,246,.18),transparent 65%);filter:blur(24px);z-index:0;pointer-events:none}
+.mwin{position:relative;z-index:1;border-radius:18px;border:1px solid rgba(255,255,255,.1);overflow:hidden;background:var(--s1);box-shadow:0 48px 100px rgba(0,0,0,.7)}
+.mbar{background:var(--s2);padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.mdot{width:10px;height:10px;border-radius:50%}
+.murl{flex:1;background:rgba(255,255,255,.04);border-radius:6px;padding:5px 14px;font-size:11px;color:var(--muted);text-align:center;margin:0 16px}
+.mbody{display:grid;grid-template-columns:190px 1fr;height:320px}
+.mside{border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:3px}
+.mside-label{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;margin-bottom:4px}
+.mitem{padding:8px 12px;border-radius:8px;font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:8px;cursor:default;white-space:nowrap;transition:background .2s}
+.mitem.a{background:rgba(139,92,246,.12);color:var(--blue)}
+.mitem:hover{background:rgba(255,255,255,.04)}
+.mmain{padding:18px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.bubble{padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.6;max-width:82%}
+.bubble.ai{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px}
+.bubble.ai::before{content:'✦ ';font-size:10px;color:var(--blue)}
+.bubble.u{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.minput{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.msend{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.sp-strip{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:24px 48px;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.sp-item{display:flex;align-items:center;gap:12px;padding:0 48px;border-right:1px solid var(--border)}
+.sp-item:last-child{border-right:none}
+.sp-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--white),var(--muted2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sp-label{font-size:12px;color:var(--muted);font-weight:300;line-height:1.4}
+.sec{padding:120px 48px;position:relative;z-index:1}
+.sec-label{display:block;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:16px}
+.sec-sub{font-size:1rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+#features{background:var(--bg)}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 48px;border-bottom:1px solid var(--border)}
+.feat:last-child{border-bottom:none}
+.feat.flip{direction:rtl}.feat.flip>*{direction:ltr}
+.feat-content .sec-title{font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:12px}
+.feat-content .sec-sub{max-width:400px}
+.feat-points{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.feat-points li{font-size:.875rem;color:var(--muted2);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.feat-points li::before{content:'→';color:var(--blue);flex-shrink:0;margin-top:1px}
+.feat-visual{border-radius:20px;border:1px solid var(--border);background:var(--s1);overflow:hidden;position:relative}
+.feat-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.06),transparent 60%);pointer-events:none;z-index:0}
+.meeting-wrap{padding:28px;position:relative;z-index:1}
+.meeting-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:6px}
+.meeting-meta{font-size:11px;color:var(--muted);margin-bottom:16px}
+.meeting-section{margin-bottom:14px}
+.meeting-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.meeting-item{font-size:12px;color:var(--muted2);padding:4px 0;display:flex;gap:8px}
+.meeting-item::before{content:'•';color:var(--blue)}
+.task-wrap{padding:28px;position:relative;z-index:1}
+.task-row{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.task-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+.task-check.done{background:rgba(74,222,128,.15);border-color:var(--green);color:var(--green)}
+.task-name{font-size:13px;flex:1}
+.task-name.done{color:var(--muted);text-decoration:line-through}
+.task-tag{font-size:10px;padding:2px 8px;border-radius:100px;background:rgba(139,92,246,.1);color:var(--blue)}
+.doc-wrap{padding:28px;position:relative;z-index:1}
+.doc-line{height:8px;border-radius:4px;background:rgba(255,255,255,.04);margin-bottom:10px;position:relative;overflow:hidden}
+.doc-line::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--blue),var(--purple));animation:typewrite 2.5s ease-in-out infinite}
+@keyframes typewrite{0%{width:0}50%{width:100%}100%{width:100%}}
+.doc-line:nth-child(2)::after{animation-delay:.2s}
+.doc-line:nth-child(3)::after{animation-delay:.4s}
+.doc-line:nth-child(4)::after{animation-delay:.6s;width:70%!important}
+#hiw{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:120px 48px}
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
+.hiw-cell{background:var(--bg);padding:36px 28px;transition:background .3s}
+.hiw-cell:hover{background:var(--s2)}
+.hiw-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.05em;color:rgba(139,92,246,.1);display:block;margin-bottom:16px;transition:color .3s}
+.hiw-cell:hover .hiw-num{color:rgba(139,92,246,.2)}
+.hiw-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px}
+.hiw-desc{font-size:.825rem;color:var(--muted2);line-height:1.65;font-weight:300}
+#faq{background:var(--s1);border-top:1px solid var(--border);padding:120px 48px}
+.faq-list{max-width:680px;margin:64px auto 0;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.faq-q{padding:18px 22px;font-size:.95rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--blue)}
+.faq-icon{font-size:18px;color:var(--muted);transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--blue)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1)}
+.faq-a-inner{padding:0 22px 18px;font-size:.875rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.faq-item.open .faq-a{max-height:200px}
+#pricing{padding:120px 48px;position:relative;z-index:1}
+.urgency-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px;padding:12px 24px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:100px;font-size:12px;color:#fbbf24;max-width:420px;margin-left:auto;margin-right:auto}
+.urgency-dot{width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:blk 1.5s infinite}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;max-width:720px;margin:48px auto 0;background:var(--border);border-radius:24px;overflow:hidden;border:1px solid var(--border)}
+.plan{background:var(--bg);padding:40px}
+.plan.feat{background:linear-gradient(160deg,rgba(139,92,246,.09),var(--bg));position:relative}
+.plan.feat::before{content:'Most popular';position:absolute;top:20px;right:20px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:100px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+.plan-tier{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.plan-price{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.04em;margin-bottom:4px}
+.plan-price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.plan-period{font-size:.8rem;color:var(--muted);margin-bottom:28px;font-weight:300}
+.plan-items{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-items li{font-size:.85rem;color:var(--muted2);display:flex;align-items:center;gap:10px}
+.plan-items li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.plan-items li.x{opacity:.35}
+.plan-items li.x::before{content:'✕';color:var(--muted)}
+#waitlist{padding:120px 48px;background:var(--s1);border-top:1px solid var(--border);text-align:center}
+.wl-wrap{max-width:520px;margin:0 auto}
+.wl-count{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:rgba(255,255,255,.02);margin-bottom:24px}
+.wl-gdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pglow 2s infinite}
+@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}}
+.wl-form{display:flex;gap:8px;margin-top:32px;flex-wrap:wrap}
+.wl-input{flex:1;min-width:200px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.wl-input:focus{border-color:rgba(139,92,246,.5)}
+.wl-input::placeholder{color:var(--muted)}
+.wl-note{font-size:12px;color:var(--muted);margin-top:12px;font-weight:300}
+.wl-success{display:none;padding:16px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:10px;color:var(--green);font-size:14px;margin-top:16px}
+#cta-bottom{padding:160px 48px;text-align:center;position:relative;overflow:hidden;z-index:1}
+.cb-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(139,92,246,.09),transparent 70%);pointer-events:none}
+.cb-title{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,5.5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:20px;position:relative;z-index:1}
+.cb-grad{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cb-sub{font-size:1.05rem;color:var(--muted2);margin-bottom:40px;font-weight:300;position:relative;z-index:1}
+.cb-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.flogo{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--muted);text-decoration:none}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white)}
+.fcopy{font-size:12px;color:var(--muted)}
+@media(max-width:900px){
+  nav{padding:0 20px} .hbg{display:flex}
+  #hero{padding:100px 20px 60px}
+  .mbody{grid-template-columns:1fr} .mside{display:none}
+  .feat{grid-template-columns:1fr;direction:ltr!important;padding:60px 20px;gap:40px}
+  #hiw,#faq,#pricing,#waitlist,#cta-bottom{padding:72px 20px}
+  .sec{padding:72px 20px}
+  .hiw-grid{grid-template-columns:1fr 1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .sp-strip{gap:0;padding:20px;flex-direction:column}
+  .sp-item{border-right:none;border-bottom:1px solid var(--border);padding:16px 0;width:100%;justify-content:center}
+  .sp-item:last-child{border-bottom:none}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:24px 20px}
+  .flinks{flex-wrap:wrap;justify-content:center}
+}
+</style>
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://veltrongroup.ai/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@veltrongroup">
+  <meta name="twitter:creator" content="@dineshkarthickl">
+<style>.pgf{position:fixed;inset:0;background:#04060f;z-index:99996;pointer-events:none;opacity:0;transition:opacity .35s ease}.pgf.out{opacity:1;pointer-events:all}</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="cur"></div><div id="cur-ring"></div>
+<canvas id="c"></canvas>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <a href="#features" class="drawer-link" onclick="closeDrawer()">Features</a>
+  <a href="#hiw" class="drawer-link" onclick="closeDrawer()">How it works</a>
+  <a href="#pricing" class="drawer-link" onclick="closeDrawer()">Pricing</a>
+  <a href="#faq" class="drawer-link" onclick="closeDrawer()">FAQ</a>
+  <a href="#waitlist" class="drawer-cta" onclick="closeDrawer()">Get early access →</a>
+</div>
+
+<nav id="nav">
+  <a href="index.html" class="nback">← Veltron Group</a>
+  <a href="#" class="nlogo"><div class="nmark">⚡</div><span class="nname">Veltron WorkOS</span></a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="#waitlist" class="nbtn">Get early access</a>
+    <button class="hbg" id="hbg" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="hgrid"></div><div class="hglow"></div>
+  <div class="chip"><span class="cdot"></span>Coming soon · In development</div>
+  <h1 class="htitle">Work smarter,<br><span class="tg">not harder.</span></h1>
+  <p class="hsub">AI-native workplace suite for modern teams. Meeting summaries, task automation, and document drafting — built for SMEs who can't afford enterprise tooling.</p>
+  <div class="hbtns">
+    <a href="#waitlist" class="btn-p">Join the waitlist <span class="arr">→</span></a>
+    <a href="#features" class="btn-g">See features <span class="arr">↓</span></a>
+  </div>
+  <div class="mockup">
+    <div class="mglow"></div>
+    <div class="mwin">
+      <div class="mbar">
+        <div class="mdot" style="background:#ff5f57"></div><div class="mdot" style="background:#febc2e"></div><div class="mdot" style="background:#28c840"></div>
+        <div class="murl">app.veltronworkos.ai/workspace</div>
+      </div>
+      <div class="mbody">
+        <div class="mside">
+          <div class="mside-label">Navigation</div>
+          <div class="mitem a"><span>💬</span> AI Assistant</div>
+          <div class="mitem"><span>📝</span> Meetings</div>
+          <div class="mitem"><span>✅</span> Tasks</div>
+          <div class="mitem"><span>📄</span> Documents</div>
+          <div class="mitem"><span>🧠</span> Knowledge Base</div>
+        </div>
+        <div class="mmain">
+          <div class="bubble ai">Your standup meeting just ended. I've extracted 4 action items and assigned them based on who spoke about what.</div>
+          <div class="bubble u">Draft a follow-up email to the client</div>
+          <div class="bubble ai">Drafted! It summarizes today's decisions and includes the updated timeline. Want me to send it or save as draft?</div>
+          <div class="minput"><span style="color:var(--muted)">Ask your AI assistant...</span><div class="msend">↑</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sp-strip">
+  <div class="sp-item"><div><div class="sp-val">Auto</div><div class="sp-label">Meeting<br>summaries</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">SME</div><div class="sp-label">Pricing built<br>for small teams</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">API</div><div class="sp-label">Integrates with<br>your tools</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">24/7</div><div class="sp-label">AI workplace<br>assistant</div></div></div>
+</div>
+
+<div id="features">
+  <div class="feat rv">
+    <div class="feat-content">
+      <span class="sec-label">Meeting Intelligence</span>
+      <h2 class="sec-title">Never take<br>notes again.</h2>
+      <p class="sec-sub">WorkOS joins your meetings, transcribes them, and extracts decisions, action items, and follow-ups automatically.</p>
+      <ul class="feat-points">
+        <li>Automatic transcription and summarization</li>
+        <li>Action items extracted and auto-assigned</li>
+        <li>Searchable meeting history across your team</li>
+        <li>Integrates with Zoom, Google Meet, and Teams</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="meeting-wrap">
+        <div class="meeting-title">Weekly Standup — Engineering</div>
+        <div class="meeting-meta">Today, 10:00 AM · 4 participants · 18 min</div>
+        <div class="meeting-section">
+          <div class="meeting-label">Key Decisions</div>
+          <div class="meeting-item">Ship v2.1 by Friday with the new onboarding flow</div>
+          <div class="meeting-item">Postpone the analytics redesign to next sprint</div>
+        </div>
+        <div class="meeting-section">
+          <div class="meeting-label">Action Items</div>
+          <div class="meeting-item">Priya: Finalize onboarding copy by Wed</div>
+          <div class="meeting-item">Arjun: Deploy staging build by Thu EOD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat flip rv d1">
+    <div class="feat-content">
+      <span class="sec-label">Task Automation</span>
+      <h2 class="sec-title">Tasks that<br>manage themselves.</h2>
+      <p class="sec-sub">WorkOS creates, assigns, and tracks tasks automatically from meetings, emails, and chat — so nothing falls through the cracks.</p>
+      <ul class="feat-points">
+        <li>Auto-created tasks from meetings and conversations</li>
+        <li>Smart assignment based on team context</li>
+        <li>Deadline tracking with proactive reminders</li>
+        <li>Syncs with your existing project management tools</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="task-wrap">
+        <div class="task-row"><div class="task-check done">✓</div><div class="task-name done">Finalize Q3 budget proposal</div><span class="task-tag">Finance</span></div>
+        <div class="task-row"><div class="task-check done">✓</div><div class="task-name done">Send client follow-up email</div><span class="task-tag">Sales</span></div>
+        <div class="task-row"><div class="task-check"></div><div class="task-name">Deploy staging build</div><span class="task-tag">Engineering</span></div>
+        <div class="task-row"><div class="task-check"></div><div class="task-name">Review onboarding copy</div><span class="task-tag">Design</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat rv d2">
+    <div class="feat-content">
+      <span class="sec-label">Document Drafting</span>
+      <h2 class="sec-title">From idea<br>to draft, instantly.</h2>
+      <p class="sec-sub">Describe what you need — a proposal, an email, a report — and WorkOS drafts it using your team's context and tone.</p>
+      <ul class="feat-points">
+        <li>AI drafts emails, proposals, and reports in seconds</li>
+        <li>Learns your team's tone and writing style</li>
+        <li>Pulls context from meetings and past documents</li>
+        <li>One-click export to Google Docs, Word, or Notion</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="doc-wrap">
+        <div style="font-size:12px;color:var(--white);font-weight:500;margin-bottom:14px">Drafting: Client Proposal — Q3 Partnership</div>
+        <div class="doc-line"></div>
+        <div class="doc-line" style="width:90%"></div>
+        <div class="doc-line" style="width:95%"></div>
+        <div class="doc-line" style="width:70%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="hiw">
+  <div class="rv" style="text-align:center"><span class="sec-label">How it works</span><h2 class="sec-title">From meeting to<br>action in minutes.</h2></div>
+  <div class="hiw-grid rv d1">
+    <div class="hiw-cell"><span class="hiw-num">01</span><div class="hiw-title">Connect your tools</div><p class="hiw-desc">Link your calendar, video calls, and existing project management tools in minutes.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">02</span><div class="hiw-title">AI joins & listens</div><p class="hiw-desc">WorkOS transcribes meetings and extracts decisions, action items, and context automatically.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">03</span><div class="hiw-title">Tasks get created</div><p class="hiw-desc">Action items become tasks, automatically assigned to the right team member with deadlines.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">04</span><div class="hiw-title">Draft & ship faster</div><p class="hiw-desc">Generate documents, emails, and reports instantly using your team's own context and tone.</p></div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="rv" style="text-align:center"><span class="sec-label">FAQ</span><h2 class="sec-title">Questions answered.</h2></div>
+  <div class="faq-list rv d1">
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What tools does WorkOS integrate with?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">At launch, WorkOS integrates with Zoom, Google Meet, Microsoft Teams, Google Workspace, and Slack. More integrations including Notion, Asana, and Jira are planned shortly after.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my company's data secure?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Yes. All data is encrypted at rest and in transit, with per-organization data isolation. We never use your company's data to train shared AI models.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How is this different from other AI meeting tools?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">WorkOS isn't just a meeting notetaker — it's a full workplace AI that connects meetings, tasks, and documents into one continuous workflow, priced specifically for SMEs who can't afford enterprise suites.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">When does it launch?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Veltron WorkOS is part of our Phase 3 roadmap. Join the waitlist and you'll be among the first to get beta access.</div></div></div>
+  </div>
+</section>
+
+<section id="pricing" class="sec">
+  <div class="rv" style="text-align:center">
+    <span class="sec-label">Pricing</span>
+    <h2 class="sec-title">Built for SME budgets.</h2>
+    <p class="sec-sub" style="margin:12px auto 0;max-width:380px;text-align:center">Per-seat pricing that scales with your team, not enterprise contracts.</p>
+  </div>
+  <div class="rv d1" style="text-align:center"><div class="urgency-bar"><span class="urgency-dot"></span>Waitlist teams get 30% off for the first year</div></div>
+  <div class="pricing-grid rv d2">
+    <div class="plan">
+      <div class="plan-tier">Starter</div>
+      <div class="plan-price">₹499 <span>/ seat/mo</span></div>
+      <div class="plan-period">~$6 USD per seat · for small teams</div>
+      <ul class="plan-items">
+        <li>Meeting transcription & summaries</li>
+        <li>Basic task automation</li>
+        <li>5 document drafts / month</li>
+        <li class="x">Custom integrations</li>
+        <li class="x">Team knowledge base</li>
+        <li class="x">Priority support</li>
+      </ul>
+      <a href="#waitlist" class="btn-g" style="width:100%;justify-content:center">Join waitlist</a>
+    </div>
+    <div class="plan feat">
+      <div class="plan-tier">Team</div>
+      <div class="plan-price">₹999 <span>/ seat/mo</span></div>
+      <div class="plan-period">~$12 USD per seat · for growing teams</div>
+      <ul class="plan-items">
+        <li>Everything in Starter</li>
+        <li>Unlimited document drafting</li>
+        <li>Full task automation & assignment</li>
+        <li>Team knowledge base</li>
+        <li>Custom tool integrations</li>
+        <li>Priority AI responses & support</li>
+      </ul>
+      <a href="#waitlist" class="btn-p" style="width:100%;justify-content:center">Join waitlist <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wl-wrap">
+    <div class="rv" style="text-align:center">
+      <span class="sec-label">Join the waitlist</span>
+      <h2 class="sec-title">Be first in line.</h2>
+      <p class="sec-sub" style="margin:12px auto 0;text-align:center">Get beta access and 30% off your first year.</p>
+      <div class="wl-count" style="margin:24px auto 0;display:inline-flex"><span class="wl-gdot"></span>&nbsp;63 teams already on the waitlist</div>
+    </div>
+    <div class="rv d1">
+      <div class="wl-form" id="wl-form">
+        <input type="email" class="wl-input" id="wl-email" placeholder="your@company.com">
+        <button class="btn-p" onclick="joinWaitlist()">Join waitlist <span class="arr">→</span></button>
+      </div>
+      <div class="wl-success" id="wl-success">🎉 You're on the list! We'll reach out as soon as WorkOS launches.</div>
+      <p class="wl-note">No spam. Unsubscribe anytime.</p>
+    </div>
+  </div>
+</section>
+
+<section id="cta-bottom">
+  <div class="cb-glow"></div>
+  <div class="rv">
+    <h2 class="cb-title">Your team's AI<br><span class="cb-grad">just got an upgrade.</span></h2>
+    <p class="cb-sub">Stop drowning in busywork. Start shipping faster.</p>
+    <div class="cb-btns">
+      <a href="#waitlist" class="btn-p">Join the waitlist <span class="arr">→</span></a>
+      <a href="index.html" class="btn-g">← Veltron Group</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="flogo">Veltron WorkOS by Veltron Group</a>
+  <div class="flinks"><a href="#features">Features</a><a href="#hiw">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="index.html#contact">Contact</a></div>
+  <span class="fcopy">© 2025 Veltron Group</span>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+document.querySelectorAll('a,button,.hiw-cell,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='14px';cur.style.height='14px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(139,92,246,.7)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(139,92,246,.4)'});
+});
+const prog=document.getElementById('progress'),nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{prog.style.width=((scrollY/(document.body.scrollHeight-innerHeight))*100)+'%';nav.classList.toggle('s',scrollY>30);});
+(function(){const c=document.getElementById('c'),ctx=c.getContext('2d');let W,H,pts=[];
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight}resize();addEventListener('resize',resize);
+class P{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.r=Math.random()*1.2+.3;this.a=Math.random()*.45+.1}}
+for(let i=0;i<65;i++)pts.push(new P());
+function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(139,92,246,${p.a})`;ctx.fill()});
+pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(139,92,246,${.11*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}}));
+requestAnimationFrame(draw);}draw();})();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(r=>io.observe(r));
+function toggleDrawer(){const o=document.getElementById('drawer').classList.toggle('open');document.getElementById('hbg').classList.toggle('open',o);document.getElementById('overlay').classList.toggle('on',o)}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.getElementById('overlay').classList.remove('on')}
+function toggleFaq(el){const item=el.parentElement;document.querySelectorAll('.faq-item').forEach(i=>{if(i!==item)i.classList.remove('open')});item.classList.toggle('open');}
+function joinWaitlist(){const email=document.getElementById('wl-email').value.trim();if(!email||!email.includes('@')){document.getElementById('wl-email').style.borderColor='rgba(239,68,68,.5)';return}document.getElementById('wl-form').style.display='none';document.getElementById('wl-success').style.display='block';}
+</script>
+<a href="https://wa.me/917845763698?text=Hi%2C+I%27m+interested+in+Veltron+Group" target="_blank" id="wa-float" title="WhatsApp" style="position:fixed;bottom:28px;right:28px;z-index:500;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);text-decoration:none;animation:popIn .5s 2s cubic-bezier(.22,1,.36,1) both"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a><div id="ck" style="position:fixed;bottom:28px;left:28px;z-index:600;max-width:360px;background:#080c18;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);font-family:Inter,sans-serif">
+  <p style="font-size:13px;color:#7a82a0;line-height:1.6;margin-bottom:14px;font-weight:300">We use cookies to improve your experience. <a href="#" style="color:#5b7fff;text-decoration:none">Privacy Policy</a>.</p>
+  <div style="display:flex;gap:8px">
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,#5b7fff,#8b5cf6);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">Accept</button>
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 14px;border-radius:8px;background:transparent;color:#7a82a0;border:1px solid rgba(255,255,255,.1);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Decline</button>
+  </div>
+</div>
+<script>
+(function(){
+  var pf=document.createElement('div');pf.className='pgf';document.body.appendChild(pf);
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h=a.getAttribute('href');
+    if(!h||h[0]==='#'||h.indexOf('mailto')===0||h.indexOf('http')===0||h.indexOf('wa.me')>-1)return;
+    a.addEventListener('click',function(e){
+      e.preventDefault();pf.classList.add('out');
+      setTimeout(function(){window.location.href=h;},330);
+    });
+  });
+  window.addEventListener('pageshow',function(){pf.classList.remove('out');});
+})();
+</script>
+</body>
+</html>

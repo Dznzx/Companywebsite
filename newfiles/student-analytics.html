@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Student Analytics — Risk Prediction System</title>
+<meta name="description" content="Production-grade ML platform predicting student at-risk levels using 3 ML models with Explainable AI. Live on Vercel and Render.">
+<meta property="og:title" content="AI Student Analytics — Risk Prediction System">
+<meta property="og:description" content="React + FastAPI + PostgreSQL + Scikit-learn. 3 ML models, XAI, live dashboard.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#04060f;--s1:#080c18;--s2:#0d1220;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--white:#eef0f8;--muted:#4a5070;--muted2:#7a82a0;--blue:#5b7fff;--purple:#8b5cf6;--cyan:#22d3ee;--green:#4ade80;--red:#f87171;--yellow:#fbbf24}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;font-weight:400;overflow-x:hidden;cursor:none}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:99997}
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--blue);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cur-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(91,127,255,.4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .3s,height .3s,border-color .3s}
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--cyan));z-index:10001;width:0%}
+#c{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.38}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
+nav.s{background:rgba(4,6,15,.82);backdrop-filter:blur(24px);border-color:var(--border)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white)}
+.nmark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;font-family:'Syne',sans-serif}
+.nname{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.02em}
+.nback{font-size:12px;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;border:1px solid var(--border);padding:6px 14px;border-radius:8px}
+.nback:hover{color:var(--white);border-color:var(--border2)}
+.nbtns{display:flex;align-items:center;gap:10px}
+.nbtn-p{font-size:13px;font-weight:500;padding:8px 20px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 28px rgba(91,127,255,.25)}
+.nbtn-p:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(91,127,255,.45)}
+.nbtn-g{font-size:13px;font-weight:500;padding:8px 20px;border-radius:9px;border:1px solid var(--border2);color:var(--white);text-decoration:none;background:rgba(255,255,255,.04);transition:background .2s}
+.nbtn-g:hover{background:rgba(255,255,255,.09)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border:none;background:none}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--muted2);transition:all .3s;border-radius:2px}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+#drawer{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--s1);border-left:1px solid var(--border);z-index:999;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);padding:80px 32px 40px;display:flex;flex-direction:column;gap:8px}
+#drawer.open{transform:translateX(0)}
+.drawer-link{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--muted2);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transition:color .2s}
+.drawer-link:hover{color:var(--white)}
+#overlay{position:fixed;inset:0;background:rgba(4,6,15,.7);z-index:998;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.on{opacity:1;pointer-events:all}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 60px;position:relative;overflow:hidden;z-index:1}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,127,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(91,127,255,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 40%,black,transparent)}
+.hglow{position:absolute;width:800px;height:600px;top:50%;left:50%;transform:translate(-50%,-60%);background:radial-gradient(ellipse,rgba(91,127,255,.13) 0%,rgba(139,92,246,.06) 40%,transparent 70%);pointer-events:none;animation:hg 7s ease-in-out infinite alternate}
+@keyframes hg{from{transform:translate(-50%,-60%) scale(1)}to{transform:translate(-50%,-58%) scale(1.1)}}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);border:1px solid rgba(74,222,128,.2);padding:5px 14px;border-radius:100px;background:rgba(74,222,128,.06);margin-bottom:28px;opacity:0;animation:ri .7s .1s forwards}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pglow 2s infinite}
+@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}}
+.htitle{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,7vw,6rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:24px;opacity:0;animation:ri .9s .3s forwards}
+.tg{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.hsub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--muted2);max-width:520px;margin:0 auto 36px;line-height:1.75;font-weight:300;opacity:0;animation:ri .9s .5s forwards}
+.hbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:ri .9s .65s forwards;margin-bottom:56px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 36px rgba(91,127,255,.25);cursor:none}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(91,127,255,.5)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:var(--white);border:1px solid var(--border2);text-decoration:none;transition:background .2s,border-color .2s,transform .2s;cursor:none}
+.btn-g:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
+.arr{transition:transform .2s}.btn-p:hover .arr,.btn-g:hover .arr{transform:translateX(3px)}
+@keyframes ri{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATS STRIP */
+.sp-strip{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:24px 48px;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.sp-item{display:flex;align-items:center;gap:12px;padding:0 48px;border-right:1px solid var(--border)}
+.sp-item:last-child{border-right:none}
+.sp-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--white),var(--muted2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sp-label{font-size:12px;color:var(--muted);font-weight:300;line-height:1.4}
+
+/* DASHBOARD MOCKUP */
+.mockup{opacity:0;animation:ri .9s .8s forwards;max-width:900px;width:100%;position:relative}
+.mglow{position:absolute;inset:-40px;background:radial-gradient(ellipse at 50% 50%,rgba(91,127,255,.18),transparent 65%);filter:blur(24px);z-index:0;pointer-events:none}
+.mwin{position:relative;z-index:1;border-radius:18px;border:1px solid rgba(255,255,255,.1);overflow:hidden;background:var(--s1);box-shadow:0 48px 100px rgba(0,0,0,.7)}
+.mbar{background:var(--s2);padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.mdot{width:10px;height:10px;border-radius:50%}
+.murl{flex:1;background:rgba(255,255,255,.04);border-radius:6px;padding:5px 14px;font-size:11px;color:var(--muted);text-align:center;margin:0 16px}
+.mbody{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mcard{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px}
+.mcard-label{font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.mcard-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800}
+.mtable{grid-column:span 4;background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mthead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:10px 16px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.mtrow{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px;align-items:center}
+.mtrow:last-child{border-bottom:none}
+.risk-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:100px}
+.risk-high{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.risk-low{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+
+/* SECTIONS */
+.sec{padding:120px 48px;position:relative;z-index:1}
+.sec-label{display:block;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:16px}
+.sec-sub{font-size:1rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* FEATURES */
+#features{background:var(--bg)}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 48px;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.feat:last-child{border-bottom:none}
+.feat.flip{direction:rtl}.feat.flip>*{direction:ltr}
+.feat-content .sec-title{font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:12px}
+.feat-content .sec-sub{max-width:420px}
+.feat-points{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.feat-points li{font-size:.875rem;color:var(--muted2);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.feat-points li::before{content:'→';color:var(--blue);flex-shrink:0;margin-top:1px}
+.feat-visual{border-radius:20px;border:1px solid var(--border);background:var(--s1);overflow:hidden;position:relative}
+.feat-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(91,127,255,.06),transparent 60%);pointer-events:none;z-index:0}
+.fv-pad{padding:28px;position:relative;z-index:1}
+/* Model accuracy bars */
+.model-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.model-name{font-size:12px;color:var(--white);font-weight:500;min-width:130px}
+.model-track{flex:1;height:8px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden}
+.model-fill{height:100%;border-radius:4px;animation:grow 1.5s ease forwards}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+.model-pct{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;min-width:40px;text-align:right}
+/* XAI visual */
+.xai-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.xai-row:last-child{border-bottom:none}
+.xai-feat{font-size:12px;color:var(--white);min-width:100px}
+.xai-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.xai-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.xai-imp{font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+/* Dashboard visual */
+.dash-mini{display:flex;flex-direction:column;gap:8px}
+.dash-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px}
+.dash-stat-label{font-size:12px;color:var(--muted2)}
+.dash-stat-val{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
+
+/* TECH STACK */
+#stack{background:var(--s1);border-top:1px solid var(--border);padding:120px 48px}
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
+.stack-cell{background:var(--bg);padding:32px 28px;transition:background .3s}
+.stack-cell:hover{background:var(--s2)}
+.stack-icon{font-size:2rem;margin-bottom:14px;display:block}
+.stack-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px}
+.stack-desc{font-size:.8rem;color:var(--muted2);line-height:1.6;font-weight:300}
+
+/* HOW IT WORKS */
+#hiw{padding:120px 48px}
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
+.hiw-cell{background:var(--s1);padding:36px 28px;transition:background .3s}
+.hiw-cell:hover{background:var(--s2)}
+.hiw-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.05em;color:rgba(91,127,255,.1);display:block;margin-bottom:16px;transition:color .3s}
+.hiw-cell:hover .hiw-num{color:rgba(91,127,255,.2)}
+.hiw-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px}
+.hiw-desc{font-size:.825rem;color:var(--muted2);line-height:1.65;font-weight:300}
+
+/* CTA BOTTOM */
+#cta-bottom{padding:160px 48px;text-align:center;position:relative;overflow:hidden;z-index:1}
+.cb-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(91,127,255,.09),transparent 70%);pointer-events:none}
+.cb-title{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:20px;position:relative;z-index:1}
+.cb-grad{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cb-sub{font-size:1.05rem;color:var(--muted2);margin-bottom:40px;font-weight:300;position:relative;z-index:1}
+.cb-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+
+footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.flogo{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--muted);text-decoration:none}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white)}
+.fcopy{font-size:12px;color:var(--muted)}
+
+/* cookie */
+#ck{position:fixed;bottom:28px;left:28px;z-index:600;max-width:360px;background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);font-family:Inter,sans-serif}
+.pgf{position:fixed;inset:0;background:#04060f;z-index:99996;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.pgf.out{opacity:1;pointer-events:all}
+
+@media(max-width:900px){
+  nav{padding:0 20px} .hbg{display:flex}
+  #hero{padding:100px 20px 60px}
+  .mbody{grid-template-columns:1fr 1fr}
+  .mtable{grid-column:span 2}
+  .mthead,.mtrow{grid-template-columns:2fr 1fr 1fr}
+  .mthead>*:nth-child(4),.mthead>*:nth-child(5),.mtrow>*:nth-child(4),.mtrow>*:nth-child(5){display:none}
+  .feat{grid-template-columns:1fr;direction:ltr!important;padding:60px 20px;gap:40px}
+  .stack-grid,.hiw-grid{grid-template-columns:1fr 1fr}
+  #stack,#hiw,#cta-bottom,.sec{padding:72px 20px}
+  .sp-strip{flex-direction:column;padding:20px}
+  .sp-item{border-right:none;border-bottom:1px solid var(--border);padding:16px 0;width:100%;justify-content:center}
+  .sp-item:last-child{border-bottom:none}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:24px 20px}
+  .flinks{flex-wrap:wrap;justify-content:center}
+  .nbtns .nbtn-g{display:none}
+}
+</style>
+</head>
+<body>
+<div class="pgf" id="pgf"></div>
+<div id="progress"></div>
+<div id="cur"></div><div id="cur-ring"></div>
+<canvas id="c"></canvas>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <a href="#features" class="drawer-link" onclick="closeDrawer()">Features</a>
+  <a href="#stack" class="drawer-link" onclick="closeDrawer()">Tech Stack</a>
+  <a href="#hiw" class="drawer-link" onclick="closeDrawer()">How it works</a>
+  <a href="https://ai-student-analytics.vercel.app" target="_blank" target="_blank" class="drawer-link">Live App ↗</a>
+  <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank" class="drawer-link">GitHub ↗</a>
+</div>
+
+<nav id="nav">
+  <a href="index.html" class="nback">← Veltron Group</a>
+  <a href="#" class="nlogo"><div class="nmark">📊</div><span class="nname">AI Student Analytics</span></a>
+  <div class="nbtns">
+    <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank" class="nbtn-g">GitHub ↗</a>
+    <a href="https://ai-student-analytics.vercel.app" target="_blank" target="_blank" class="nbtn-p">View live app →</a>
+    <button class="hbg" id="hbg" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hgrid"></div><div class="hglow"></div>
+  <div class="chip"><span class="cdot"></span>Live · Deployed on Vercel + Render</div>
+  <h1 class="htitle">Predict student risk<br><span class="tg">before it's too late.</span></h1>
+  <p class="hsub">A production-grade ML platform that identifies at-risk students using 3 machine learning models with Explainable AI — built and deployed entirely independently as a 1st-year student.</p>
+  <div class="hbtns">
+    <a href="https://ai-student-analytics.vercel.app" target="_blank" target="_blank" class="btn-p">View live app <span class="arr">→</span></a>
+    <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank" class="btn-g">GitHub <span class="arr">↗</span></a>
+  </div>
+
+  <!-- DASHBOARD MOCKUP -->
+  <div class="mockup">
+    <div class="mglow"></div>
+    <div class="mwin">
+      <div class="mbar">
+        <div class="mdot" style="background:#ff5f57"></div>
+        <div class="mdot" style="background:#febc2e"></div>
+        <div class="mdot" style="background:#28c840"></div>
+        <div class="murl">ai-student-analytics.vercel.app/dashboard</div>
+      </div>
+      <div class="mbody">
+        <div class="mcard"><div class="mcard-label">Total Students</div><div class="mcard-val" style="color:var(--blue)">248</div></div>
+        <div class="mcard"><div class="mcard-label">Avg CGPA</div><div class="mcard-val" style="color:var(--green)">7.84</div></div>
+        <div class="mcard"><div class="mcard-label">Avg Attendance</div><div class="mcard-val" style="color:var(--purple)">81.2%</div></div>
+        <div class="mcard"><div class="mcard-label">High Risk</div><div class="mcard-val" style="color:var(--red)">34</div></div>
+        <div class="mtable">
+          <div class="mthead"><span>Student</span><span>Attendance</span><span>CGPA</span><span>Dept</span><span>Risk</span></div>
+          <div class="mtrow"><span style="font-weight:500">Aditya Kumar</span><span style="color:var(--red)">62%</span><span style="color:var(--red)">6.1</span><span style="color:var(--muted)">CSE</span><span><span class="risk-badge risk-high">HIGH</span></span></div>
+          <div class="mtrow"><span style="font-weight:500">Priya Sharma</span><span style="color:var(--green)">91%</span><span style="color:var(--green)">8.9</span><span style="color:var(--muted)">ECE</span><span><span class="risk-badge risk-low">LOW</span></span></div>
+          <div class="mtrow"><span style="font-weight:500">Rahul Verma</span><span style="color:var(--yellow)">74%</span><span style="color:var(--yellow)">6.8</span><span style="color:var(--muted)">MECH</span><span><span class="risk-badge risk-high">HIGH</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="sp-strip">
+  <div class="sp-item"><div><div class="sp-val">3</div><div class="sp-label">ML models trained<br>& deployed</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">94.2%</div><div class="sp-label">Best model<br>accuracy</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">XAI</div><div class="sp-label">Explainable AI<br>features built in</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">Live</div><div class="sp-label">Deployed on<br>Vercel + Render</div></div></div>
+</div>
+
+<!-- FEATURES -->
+<div id="features">
+  <div class="feat rv">
+    <div class="feat-content">
+      <span class="sec-label">ML Risk Prediction</span>
+      <h2 class="sec-title">3 models, one<br>clear answer.</h2>
+      <p class="sec-sub">Three machine learning models run in parallel — Logistic Regression, Decision Tree, and Random Forest — each predicting student risk level with confidence scores.</p>
+      <ul class="feat-points">
+        <li>Random Forest achieves 94.2% accuracy on test data</li>
+        <li>Confidence score shown alongside every prediction</li>
+        <li>Models trained on attendance and CGPA patterns</li>
+        <li>Hyperparameter tuning available directly in the dashboard</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="fv-pad">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:18px">Model Accuracy Comparison</div>
+        <div class="model-row"><span class="model-name">Random Forest</span><div class="model-track"><div class="model-fill" style="--w:94.2%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div><span class="model-pct" style="color:var(--green)">94.2%</span></div>
+        <div class="model-row"><span class="model-name">Logistic Regression</span><div class="model-track"><div class="model-fill" style="--w:91.8%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div><span class="model-pct" style="color:var(--blue)">91.8%</span></div>
+        <div class="model-row"><span class="model-name">Decision Tree</span><div class="model-track"><div class="model-fill" style="--w:89.4%;background:linear-gradient(90deg,var(--purple),var(--blue))"></div></div><span class="model-pct" style="color:var(--purple)">89.4%</span></div>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Risk distribution</div>
+          <div style="display:flex;gap:8px">
+            <div style="flex:1;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--red)">34</div><div style="font-size:10px;color:var(--muted)">High Risk</div></div>
+            <div style="flex:1;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.15);border-radius:10px;padding:10px;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--green)">214</div><div style="font-size:10px;color:var(--muted)">Low Risk</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat flip rv d1">
+    <div class="feat-content">
+      <span class="sec-label">Explainable AI</span>
+      <h2 class="sec-title">Not just predictions —<br>explanations.</h2>
+      <p class="sec-sub">Explainable AI features show exactly why a student is flagged as high risk — not just the prediction, but the reasoning behind it.</p>
+      <ul class="feat-points">
+        <li>Feature importance visualisation — which factors drive risk</li>
+        <li>ROC curves for each model</li>
+        <li>Confusion matrix with precision, recall, F1-score</li>
+        <li>Correlation heatmaps across all student attributes</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="fv-pad">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:18px">Feature Importance</div>
+        <div class="xai-row"><span class="xai-feat">Attendance</span><div class="xai-bar-wrap"><div class="xai-bar" style="width:87%"></div></div><span class="xai-imp">87%</span></div>
+        <div class="xai-row"><span class="xai-feat">CGPA</span><div class="xai-bar-wrap"><div class="xai-bar" style="width:74%;background:linear-gradient(90deg,var(--purple),var(--blue))"></div></div><span class="xai-imp">74%</span></div>
+        <div class="xai-row"><span class="xai-feat">Department</span><div class="xai-bar-wrap"><div class="xai-bar" style="width:31%;background:linear-gradient(90deg,var(--cyan),var(--blue))"></div></div><span class="xai-imp">31%</span></div>
+        <div style="margin-top:20px;padding:14px;background:rgba(91,127,255,.06);border:1px solid rgba(91,127,255,.15);border-radius:10px;font-size:12px;color:var(--muted2);line-height:1.6">
+          ✦ Attendance is the strongest predictor of student risk — more than CGPA alone.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat rv d2">
+    <div class="feat-content">
+      <span class="sec-label">Real-time Dashboard</span>
+      <h2 class="sec-title">Full analytics,<br>live in your browser.</h2>
+      <p class="sec-sub">A complete dashboard with student management, CSV upload/export, dark mode, search, and real-time ML predictions — all in a single React app.</p>
+      <ul class="feat-points">
+        <li>Add, edit, delete students — changes reflect instantly</li>
+        <li>Bulk CSV upload for entire student cohorts</li>
+        <li>Export reports as CSV in one click</li>
+        <li>Search and filter by name, department, or risk level</li>
+        <li>Dark mode toggle built in</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="fv-pad">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:18px">Dashboard Highlights</div>
+        <div class="dash-mini">
+          <div class="dash-stat"><span class="dash-stat-label">🏆 Top Performer</span><span class="dash-stat-val" style="color:var(--green)">Priya S. — 8.9 CGPA</span></div>
+          <div class="dash-stat"><span class="dash-stat-label">⚠️ Most At-Risk</span><span class="dash-stat-val" style="color:var(--red)">Aditya K. — 62% att.</span></div>
+          <div class="dash-stat"><span class="dash-stat-label">📊 Avg CGPA</span><span class="dash-stat-val" style="color:var(--blue)">7.84 / 10</span></div>
+          <div class="dash-stat"><span class="dash-stat-label">📁 CSV Upload</span><span class="dash-stat-val" style="color:var(--green)">Bulk import supported</span></div>
+          <div class="dash-stat"><span class="dash-stat-label">🌙 Dark Mode</span><span class="dash-stat-val" style="color:var(--purple)">Toggle anytime</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TECH STACK -->
+<section id="stack">
+  <div class="rv" style="text-align:center"><span class="sec-label">Tech stack</span><h2 class="sec-title">Built production-grade<br>from day one.</h2></div>
+  <div class="stack-grid rv d1">
+    <div class="stack-cell"><span class="stack-icon">⚛️</span><div class="stack-name">React.js</div><p class="stack-desc">Frontend SPA with Recharts for data visualisation, Tailwind CSS for styling, React Router for navigation.</p></div>
+    <div class="stack-cell"><span class="stack-icon">⚡</span><div class="stack-name">FastAPI</div><p class="stack-desc">Python backend with REST API endpoints for students, auth, CSV upload, and ML predictions. Auto-generates Swagger docs.</p></div>
+    <div class="stack-cell"><span class="stack-icon">🐘</span><div class="stack-name">PostgreSQL</div><p class="stack-desc">Neon Cloud serverless Postgres database. Stores users and student records with SQLAlchemy ORM.</p></div>
+    <div class="stack-cell"><span class="stack-icon">🤖</span><div class="stack-name">Scikit-learn</div><p class="stack-desc">3 ML models trained, evaluated, and serialised with joblib. Logistic Regression, Decision Tree, and Random Forest.</p></div>
+    <div class="stack-cell"><span class="stack-icon">🔐</span><div class="stack-name">JWT Auth</div><p class="stack-desc">Secure token-based authentication with bcrypt password hashing and protected API routes.</p></div>
+    <div class="stack-cell"><span class="stack-icon">▲</span><div class="stack-name">Vercel</div><p class="stack-desc">Frontend deployed on Vercel with automatic GitHub CI/CD. Zero-config deployment.</p></div>
+    <div class="stack-cell"><span class="stack-icon">🖥️</span><div class="stack-name">Render</div><p class="stack-desc">FastAPI backend hosted on Render with environment variable management and auto-deploy on push.</p></div>
+    <div class="stack-cell"><span class="stack-icon">📊</span><div class="stack-name">Recharts</div><p class="stack-desc">Bar charts, pie charts, and distribution graphs for CGPA and risk analytics — all interactive.</p></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="hiw" class="sec" style="padding-top:0">
+  <div class="rv" style="text-align:center"><span class="sec-label">How it works</span><h2 class="sec-title">From data to<br>actionable insight.</h2></div>
+  <div class="hiw-grid rv d1">
+    <div class="hiw-cell"><span class="hiw-num">01</span><div class="hiw-title">Add students</div><p class="hiw-desc">Manually add students or bulk import via CSV with name, register number, department, attendance, and CGPA.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">02</span><div class="hiw-title">ML predicts risk</div><p class="hiw-desc">All 3 models run instantly on each student — returning a risk prediction and confidence percentage.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">03</span><div class="hiw-title">Analyse with XAI</div><p class="hiw-desc">View ROC curves, feature importance, and confusion matrices to understand exactly what's driving risk.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">04</span><div class="hiw-title">Export & act</div><p class="hiw-desc">Export full reports as CSV and get AI-generated recommendations for each student's next steps.</p></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta-bottom">
+  <div class="cb-glow"></div>
+  <div class="rv">
+    <h2 class="cb-title">See it live.<br><span class="cb-grad">Right now.</span></h2>
+    <p class="cb-sub">Fully deployed and working — no signup required to explore the demo.</p>
+    <div class="cb-btns">
+      <a href="https://ai-student-analytics.vercel.app" target="_blank" target="_blank" class="btn-p">Open live app <span class="arr">→</span></a>
+      <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank" class="btn-g">View on GitHub <span class="arr">↗</span></a>
+      <a href="index.html" class="btn-g">← Veltron Group</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="flogo">AI Student Analytics · Veltron Group</a>
+  <div class="flinks">
+    <a href="#features">Features</a>
+    <a href="#stack">Tech Stack</a>
+    <a href="#hiw">How it works</a>
+    <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank">GitHub</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <span class="fcopy">© 2025 Veltron Group</span>
+</footer>
+
+<div id="ck">
+  <p style="font-size:13px;color:#7a82a0;line-height:1.6;margin-bottom:14px;font-weight:300">We use cookies to improve your experience. <a href="#" style="color:#5b7fff;text-decoration:none">Privacy Policy</a>.</p>
+  <div style="display:flex;gap:8px">
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,#5b7fff,#8b5cf6);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer">Accept</button>
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 14px;border-radius:8px;background:transparent;color:#7a82a0;border:1px solid rgba(255,255,255,.1);font-size:12px;cursor:pointer">Decline</button>
+  </div>
+</div>
+
+<a href="https://wa.me/917845763698?text=Hi%2C+interested+in+Veltron+Group" target="_blank" style="position:fixed;bottom:28px;right:28px;z-index:500;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);text-decoration:none">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+document.querySelectorAll('a,button,.hiw-cell,.stack-cell').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='14px';cur.style.height='14px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(91,127,255,.7)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(91,127,255,.4)'});
+});
+const prog=document.getElementById('progress'),nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{prog.style.width=((scrollY/(document.body.scrollHeight-innerHeight))*100)+'%';nav.classList.toggle('s',scrollY>30)});
+(function(){const c=document.getElementById('c'),ctx=c.getContext('2d');let W,H,pts=[];
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight}resize();addEventListener('resize',resize);
+class P{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.r=Math.random()*1.2+.3;this.a=Math.random()*.45+.1}}
+for(let i=0;i<65;i++)pts.push(new P());
+function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(91,127,255,${p.a})`;ctx.fill()});
+pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(91,127,255,${.11*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}}));
+requestAnimationFrame(draw);}draw();})();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(r=>io.observe(r));
+function toggleDrawer(){const o=document.getElementById('drawer').classList.toggle('open');document.getElementById('hbg').classList.toggle('open',o);document.getElementById('overlay').classList.toggle('on',o)}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.getElementById('overlay').classList.remove('on')}
+// page transitions
+(function(){var pf=document.getElementById('pgf');
+document.querySelectorAll('a[href]').forEach(function(a){
+  var h=a.getAttribute('href');
+  if(!h||h[0]==='#'||h.indexOf('mailto')===0||h.indexOf('http')===0||h.indexOf('wa.me')>-1)return;
+  a.addEventListener('click',function(e){e.preventDefault();pf.classList.add('out');setTimeout(function(){window.location.href=h},330)});
+});
+window.addEventListener('pageshow',function(){pf.classList.remove('out')});})();
+</script>
+</body>
+</html>

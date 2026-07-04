@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Veltron Group — AI for Everyone</title>
+<meta name="description" content="Veltron Group builds AI products for students, professionals and businesses — across every sector, on every continent.">
+<meta property="og:title" content="Veltron Group — AI for Everyone">
+<meta property="og:description" content="Academic Twin, Health AI, WorkOS, FinAI — AI built for the world.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#04060f;--s1:#080c18;--s2:#0d1220;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--white:#eef0f8;--muted:#4a5070;--muted2:#7a82a0;--blue:#5b7fff;--purple:#8b5cf6;--cyan:#22d3ee;--green:#4ade80}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;font-weight:400;overflow-x:hidden;cursor:none}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:99997}
+
+/* CURSOR */
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--blue);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cur-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(91,127,255,.4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .3s,height .3s,border-color .3s}
+
+/* SCROLL PROGRESS */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--cyan));z-index:10001;width:0%;transition:width .1s linear}
+
+/* CANVAS */
+#c{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.45}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
+nav.s{background:rgba(4,6,15,.82);backdrop-filter:blur(24px) saturate(180%);border-color:var(--border)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white)}
+.nmark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.nname{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.02em}
+.nlinks{display:flex;gap:36px;list-style:none}
+.nlinks a{font-size:13px;color:var(--muted2);text-decoration:none;transition:color .2s}
+.nlinks a:hover{color:var(--white)}
+.ncta{font-size:13px;font-weight:500;padding:8px 18px;border-radius:8px;border:1px solid var(--border2);color:var(--white);text-decoration:none;background:rgba(255,255,255,.04);transition:background .2s,border-color .2s}
+.nback{font-size:12px;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;border:1px solid var(--border);padding:6px 14px;border-radius:8px}
+.nback:hover{color:var(--white);border-color:var(--border2)}
+.ncta:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22)}
+/* hamburger */
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border:none;background:none;z-index:1001}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--muted2);transition:all .3s;border-radius:2px}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+/* mobile drawer */
+#drawer{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--s1);border-left:1px solid var(--border);z-index:999;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);padding:80px 32px 40px;display:flex;flex-direction:column;gap:8px}
+#drawer.open{transform:translateX(0)}
+.drawer-link{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--muted2);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transition:color .2s;letter-spacing:-.01em}
+.drawer-link:hover{color:var(--white)}
+.drawer-cta{margin-top:24px;padding:14px 20px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;font-size:14px;font-weight:500;text-align:center;display:block}
+#overlay{position:fixed;inset:0;background:rgba(4,6,15,.7);z-index:998;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.on{opacity:1;pointer-events:all}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;z-index:1}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,127,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(91,127,255,.03) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black,transparent)}
+.hglow{position:absolute;width:900px;height:600px;top:50%;left:50%;transform:translate(-50%,-60%);background:radial-gradient(ellipse,rgba(91,127,255,.12) 0%,rgba(139,92,246,.06) 40%,transparent 70%);pointer-events:none;animation:hg 6s ease-in-out infinite alternate}
+@keyframes hg{from{transform:translate(-50%,-60%) scale(1)}to{transform:translate(-50%,-58%) scale(1.08)}}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);border:1px solid rgba(91,127,255,.2);padding:5px 14px;border-radius:100px;background:rgba(91,127,255,.06);margin-bottom:32px;opacity:0;animation:ri .8s .2s forwards}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blk 2s infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.3}}
+.htitle{font-family:'Syne',sans-serif;font-size:clamp(3.5rem,9vw,7.5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:24px;opacity:0;animation:ri .9s .35s forwards}
+.tg{background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 45%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.tg2{background:linear-gradient(90deg,var(--white) 0%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hsub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--muted2);max-width:500px;margin:0 auto 40px;line-height:1.75;font-weight:300;opacity:0;animation:ri .9s .5s forwards}
+.hbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:ri .9s .65s forwards}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:500;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;text-decoration:none;cursor:none;transition:transform .2s,box-shadow .2s,filter .2s;box-shadow:0 0 40px rgba(91,127,255,.25)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(91,127,255,.45);filter:brightness(1.1)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:var(--white);border:1px solid var(--border2);text-decoration:none;cursor:none;transition:background .2s,border-color .2s,transform .2s}
+.btn-g:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
+.arr{transition:transform .2s}.btn-p:hover .arr,.btn-g:hover .arr{transform:translateX(3px)}
+.hbadge{margin-top:48px;opacity:0;animation:ri .9s .8s forwards}
+.hbadge-inner{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--muted2);border:1px solid var(--border);padding:6px 16px;border-radius:100px;background:rgba(255,255,255,.02)}
+.hb-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(74,222,128,.4);animation:pglow 2s infinite}
+@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}}
+@keyframes ri{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* TICKER */
+.ticker{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:13px 0;background:var(--s1);position:relative;z-index:1}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--s1),transparent)}
+.ticker::after{right:0;background:linear-gradient(-90deg,var(--s1),transparent)}
+.ticker-track{display:flex;gap:48px;width:max-content;animation:tick 30s linear infinite}
+.ticker-item{display:flex;align-items:center;gap:12px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.ticker-item .sep{color:var(--blue)}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* TECH LOGOS STRIP */
+.tech-strip{padding:48px;background:var(--bg);border-bottom:1px solid var(--border);position:relative;z-index:1}
+.tech-label{text-align:center;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:28px}
+.tech-logos{display:flex;align-items:center;justify-content:center;gap:48px;flex-wrap:wrap}
+.tech-logo{display:flex;align-items:center;gap:8px;opacity:.35;transition:opacity .3s;filter:grayscale(1)}
+.tech-logo:hover{opacity:.7;filter:grayscale(0)}
+.tech-logo .tl-icon{font-size:20px}
+.tech-logo .tl-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:-.01em}
+
+/* SECTIONS */
+.sec{padding:120px 48px;position:relative;z-index:1}
+.sec-label{display:block;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,4.5vw,3.5rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:16px}
+.sec-sub{font-size:1rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* PRODUCTS BENTO */
+#products{background:var(--bg)}
+.prod-intro{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;gap:2rem;flex-wrap:wrap}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:24px;overflow:hidden;background:var(--border)}
+.bcard{background:var(--s1);padding:40px;position:relative;overflow:hidden;transition:background .4s}
+.bcard:hover{background:var(--s2)}
+.bcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:opacity .5s}
+.bcard:hover::before{opacity:1}
+.bcard.span2{grid-column:span 2}
+.bcard.featured{background:linear-gradient(135deg,rgba(91,127,255,.09) 0%,var(--s1) 60%)}
+.bcard.featured::before{opacity:.5}
+.bcard.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.bcard-tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:20px}
+.tag-live{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+.tag-soon{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.15)}
+.tag-future{background:rgba(91,127,255,.08);color:var(--blue);border:1px solid rgba(91,127,255,.15)}
+.bcard-icon{font-size:32px;margin-bottom:20px;display:block;line-height:1}
+.bcard-name{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin-bottom:10px}
+.bcard-desc{font-size:.875rem;color:var(--muted2);line-height:1.7;font-weight:300;max-width:340px}
+.bcard-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:20px}
+.btag{font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.02)}
+.bcard-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted2);text-decoration:none;margin-top:20px;transition:color .2s,gap .2s}
+.bcard-link:hover{color:var(--blue);gap:10px}
+.bcard-link .icon{width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+.bcard-link:hover .icon{border-color:var(--blue);background:rgba(91,127,255,.1)}
+.bcard-visual{border-radius:16px;background:linear-gradient(135deg,rgba(91,127,255,.12),rgba(139,92,246,.07));border:1px solid rgba(91,127,255,.12);height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.bcard-visual::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(91,127,255,.18),transparent 60%);animation:vis-pulse 3s ease-in-out infinite alternate}
+@keyframes vis-pulse{from{opacity:.5}to{opacity:1}}
+.vis-text{font-family:'Syne',sans-serif;font-size:4.5rem;font-weight:800;letter-spacing:-.05em;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;position:relative;z-index:1;animation:float 4s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+
+/* HOW */
+#how{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-top:64px}
+.how-steps{display:flex;flex-direction:column}
+.hstep{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid var(--border);transition:padding-left .3s}
+.hstep:last-child{border-bottom:none}
+.hstep:hover{padding-left:8px}
+.hstep-num{font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;color:var(--blue);flex-shrink:0;width:28px;margin-top:2px}
+.hstep-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+.hstep-desc{font-size:.85rem;color:var(--muted2);line-height:1.7;font-weight:300}
+.how-code{border-radius:16px;border:1px solid var(--border);background:var(--bg);overflow:hidden;position:sticky;top:80px}
+.code-top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.cdot{width:10px;height:10px;border-radius:50%}
+.cfile{font-size:11px;color:var(--muted);margin-left:8px;font-family:monospace}
+.code-body{padding:20px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.8}
+.cl{display:flex;gap:16px}
+.ln{color:var(--muted);min-width:20px;text-align:right;user-select:none;opacity:.4}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#86efac}.cm{color:var(--muted);font-style:italic}.op{color:var(--cyan)}.num{color:#fb923c}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--blue);animation:blk 1s step-end infinite;vertical-align:middle}
+
+/* VISION */
+#vision{padding:160px 48px;text-align:center;position:relative;overflow:hidden}
+.vis-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(91,127,255,.07) 0%,transparent 70%);pointer-events:none}
+.vis-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,127,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(91,127,255,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+.vis-title{font-family:'Syne',sans-serif;font-size:clamp(3rem,7vw,6rem);font-weight:800;letter-spacing:-.05em;line-height:.95;max-width:900px;margin:0 auto 24px;position:relative;z-index:1}
+.vis-em{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.vis-sub{font-size:1.05rem;color:var(--muted2);max-width:560px;margin:0 auto;line-height:1.8;font-weight:300;position:relative;z-index:1}
+
+/* PILLARS */
+#pillars{padding:120px 48px;background:var(--s1);border-top:1px solid var(--border)}
+.pillars-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
+.pill-cell{background:var(--bg);padding:40px;transition:background .3s}
+.pill-cell:hover{background:var(--s2)}
+.pill-n{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;letter-spacing:-.05em;color:rgba(255,255,255,.04);display:block;margin-bottom:20px;transition:color .3s}
+.pill-cell:hover .pill-n{color:rgba(91,127,255,.12)}
+.pill-t{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-.02em;margin-bottom:10px}
+.pill-d{font-size:.875rem;color:var(--muted2);line-height:1.7;font-weight:300}
+
+/* ROADMAP */
+#roadmap{padding:120px 48px}
+.rm-wrap{max-width:760px;margin:64px auto 0;position:relative}
+.rm-line{position:absolute;left:20px;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,var(--blue),var(--purple),transparent);opacity:.2}
+.rm-item{display:flex;gap:32px;padding-bottom:48px;position:relative}
+.rm-item:last-child{padding-bottom:0}
+.rm-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--muted);background:var(--bg);flex-shrink:0;margin-top:4px;transition:border-color .3s,box-shadow .3s}
+.rm-dot.on{border-color:var(--blue);background:var(--blue);box-shadow:0 0 16px rgba(91,127,255,.6)}
+.rm-item:hover .rm-dot{border-color:var(--blue)}
+.rm-card{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:24px;flex:1;transition:border-color .3s,transform .3s}
+.rm-item:hover .rm-card{border-color:rgba(91,127,255,.25);transform:translateX(6px)}
+.rm-meta{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.rm-ph{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+.rm-yr{font-size:11px;color:var(--muted)}
+.rm-t{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.rm-d{font-size:.85rem;color:var(--muted2);line-height:1.65;font-weight:300}
+.rm-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.rp{font-size:10px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);color:var(--muted)}
+.rp.g{background:rgba(74,222,128,.08);color:var(--green);border-color:rgba(74,222,128,.2)}
+.rp.a{background:rgba(251,191,36,.07);color:#fbbf24;border-color:rgba(251,191,36,.15)}
+.rp.b{background:rgba(91,127,255,.07);color:var(--blue);border-color:rgba(91,127,255,.15)}
+
+/* FOUNDER */
+#founder{padding:120px 48px;background:var(--s1);border-top:1px solid var(--border)}
+.founder-wrap{max-width:920px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:80px;align-items:start}
+.founder-left{position:sticky;top:80px}
+.favatarwrap{position:relative;width:140px;margin-bottom:24px}
+.favatar{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:#fff;position:relative;z-index:1}
+.fring{position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(91,127,255,.25);animation:spin 8s linear infinite}
+.fring::before{content:'';position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 8px var(--blue)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.fname{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+.frole{font-size:12px;color:var(--blue);margin-bottom:20px;font-weight:500}
+.fsocials{display:flex;gap:8px}
+.fsoc{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted2);text-decoration:none;transition:border-color .2s,color .2s,background .2s}
+.fsoc:hover{border-color:var(--blue);color:var(--blue);background:rgba(91,127,255,.07)}
+.founder-right .sec-title{font-size:2.2rem;margin-bottom:24px}
+.fp{font-size:.95rem;color:var(--muted2);line-height:1.9;font-weight:300;margin-bottom:16px}
+.fp em{color:var(--white);font-style:normal}
+.fstats{display:flex;gap:32px;padding-top:24px;border-top:1px solid var(--border);margin-top:24px}
+.fstat-v{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:3px}
+.fstat-l{font-size:11px;color:var(--muted);font-weight:300}
+
+/* INVESTORS */
+#investors{padding:120px 48px;border-top:1px solid var(--border)}
+.inv-layout{max-width:960px;margin:64px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.inv-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+.inv-stat{background:var(--s1);padding:24px;transition:background .2s}
+.inv-stat:hover{background:var(--s2)}
+.iv{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.il{font-size:11px;color:var(--muted);font-weight:300;line-height:1.5}
+
+/* WAITLIST */
+#waitlist{padding:120px 48px;background:var(--s1);border-top:1px solid var(--border);text-align:center}
+.wl-wrap{max-width:560px;margin:0 auto}
+.wl-form{display:flex;gap:8px;margin-top:32px;flex-wrap:wrap}
+.wl-input{flex:1;min-width:200px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.wl-input:focus{border-color:rgba(91,127,255,.5);background:rgba(91,127,255,.03)}
+.wl-input::placeholder{color:var(--muted)}
+.wl-note{font-size:12px;color:var(--muted);margin-top:12px;font-weight:300}
+.wl-success{display:none;padding:16px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:10px;color:var(--green);font-size:14px;margin-top:16px}
+.wl-count{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);margin-bottom:24px;padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:rgba(255,255,255,.02)}
+
+/* CONTACT */
+#contact{padding:120px 48px;border-top:1px solid var(--border)}
+.contact-wrap{max-width:680px;margin:0 auto}
+.cform{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:40px;margin-top:48px}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.fl{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.fi{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:vertical;transition:border-color .2s;width:100%}
+.fi:focus{border-color:rgba(91,127,255,.5);background:rgba(91,127,255,.03)}
+.fi::placeholder{color:var(--muted)}
+.ipills{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.ipill{font-size:12px;padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.ipill:hover{border-color:rgba(91,127,255,.4);color:var(--white)}
+.ipill.on{border-color:var(--blue);color:var(--blue);background:rgba(91,127,255,.08)}
+.clinks{display:flex;gap:24px;justify-content:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--border);flex-wrap:wrap}
+.clink{font-size:13px;color:var(--muted2);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px}
+.clink:hover{color:var(--white)}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.flogo{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--muted);text-decoration:none;letter-spacing:-.02em}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white)}
+.fcopy{font-size:12px;color:var(--muted)}
+
+/* FLOATING BUTTONS */
+#wa{position:fixed;bottom:28px;right:28px;z-index:500;width:50px;height:50px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.35);transition:transform .2s,box-shadow .2s;text-decoration:none;animation:popIn .5s 2s cubic-bezier(.22,1,.36,1) both}
+#wa:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(37,211,102,.55)}
+#chatbtn{position:fixed;bottom:28px;right:86px;z-index:499;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(91,127,255,.4);transition:transform .2s;cursor:pointer;border:none;font-size:20px;animation:popIn .5s 2.3s cubic-bezier(.22,1,.36,1) both}
+#chatbtn:hover{transform:scale(1.08)}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* CHATBOT */
+#chatw{position:fixed;bottom:90px;right:86px;z-index:490;width:340px;max-height:500px;background:var(--s1);border:1px solid var(--border2);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.22,1,.36,1)}
+#chatw.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.ch{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.con{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pglow 2s infinite}
+.cc{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.cc:hover{color:var(--white)}
+.cmsgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;max-height:300px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.cm{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13px;line-height:1.5;animation:msgIn .3s cubic-bezier(.22,1,.36,1)}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cm.bot{background:var(--s2);border:1px solid var(--border);color:var(--white);align-self:flex-start;border-bottom-left-radius:4px}
+.cm.usr{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.cm.typing{display:flex;gap:4px;align-items:center;padding:12px 13px}
+.td{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot .8s infinite}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+.cinput{padding:10px;border-top:1px solid var(--border);display:flex;gap:8px}
+.ci{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.ci:focus{border-color:rgba(91,127,255,.4)}
+.ci::placeholder{color:var(--muted)}
+.cs{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform .15s}
+.cs:hover{transform:scale(1.08)}
+
+/* COOKIE BANNER */
+#cookie{position:fixed;bottom:28px;left:28px;z-index:600;max-width:380px;background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);animation:popIn .5s 3s cubic-bezier(.22,1,.36,1) both}
+.cookie-text{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:14px;font-weight:300}
+.cookie-text a{color:var(--blue);text-decoration:none}
+.cookie-btns{display:flex;gap:8px}
+.cookie-acc{padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:filter .2s}
+.cookie-acc:hover{filter:brightness(1.1)}
+.cookie-dec{padding:8px 14px;border-radius:8px;background:transparent;color:var(--muted2);border:1px solid var(--border);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color .2s,color .2s}
+.cookie-dec:hover{border-color:var(--border2);color:var(--white)}
+
+@media(max-width:900px){
+  nav{padding:0 20px} .nlinks{display:none} .hbg{display:flex}
+  .sec{padding:72px 20px} #vision{padding:100px 20px} #waitlist,#contact,#investors,#founder,#roadmap,#pillars{padding:72px 20px}
+  .bento{grid-template-columns:1fr}
+  .bcard.span2,.bcard.split{grid-column:span 1;grid-template-columns:1fr}
+  .bcard-visual{height:140px}
+  .how-layout{grid-template-columns:1fr;gap:48px} .how-code{display:none}
+  .pillars-row{grid-template-columns:1fr}
+  .founder-wrap{grid-template-columns:1fr;gap:40px} .founder-left{position:static}
+  .inv-layout{grid-template-columns:1fr;gap:40px} .inv-stats{grid-template-columns:1fr}
+  .crow{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:24px 20px}
+  .flinks{flex-wrap:wrap;justify-content:center}
+  #chatw{width:calc(100vw - 32px);right:16px;bottom:88px}
+  #chatbtn{right:84px} #wa{right:24px}
+  #cookie{left:16px;right:16px;max-width:none;bottom:16px}
+  .tech-strip{padding:32px 20px} .tech-logos{gap:28px}
+}
+</style>
+<style>.pgf{position:fixed;inset:0;background:#04060f;z-index:99996;pointer-events:none;opacity:0;transition:opacity .35s ease}.pgf.out{opacity:1;pointer-events:all}</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<canvas id="c"></canvas>
+
+<!-- MOBILE DRAWER -->
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <a href="#products" class="drawer-link" onclick="closeDrawer()">Products</a>
+  <a href="#roadmap" class="drawer-link" onclick="closeDrawer()">Roadmap</a>
+  <a href="#founder" class="drawer-link" onclick="closeDrawer()">Founder</a>
+  <a href="#investors" class="drawer-link" onclick="closeDrawer()">Investors</a>
+  <a href="#contact" class="drawer-link" onclick="closeDrawer()">Contact</a>
+  <a href="#waitlist" class="drawer-cta" onclick="closeDrawer()">Get early access →</a>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nback" style="margin-right:16px">← Veltron Group</a>
+  <a href="#" class="nlogo"><div class="nmark">V</div><span class="nname">Veltron AI Products</span></a>
+  <ul class="nlinks">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#investors">Investors</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="#waitlist" class="ncta">Get early access →</a>
+    <button class="hbg" id="hbg" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hgrid"></div><div class="hglow"></div>
+  <div class="chip"><span class="chip-dot"></span>Introducing Veltron Group of Companies</div>
+  <h1 class="htitle"><span class="tg2">Intelligence</span><span class="tg">for every frontier.</span></h1>
+  <p class="hsub">We build AI products that work for students, professionals, and businesses — across every sector, on every continent.</p>
+  <div class="hbtns">
+    <a href="#products" class="btn-p">Explore products <span class="arr">→</span></a>
+    <a href="#vision" class="btn-g">Our vision <span class="arr">↓</span></a>
+  </div>
+  <div class="hbadge"><div class="hbadge-inner"><span class="hb-dot"></span>Academic Twin — live build · 4 products in pipeline</div></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>Health AI</div><div class="ticker-item"><span class="sep">✦</span>WorkOS</div><div class="ticker-item"><span class="sep">✦</span>FinAI</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
+    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>Health AI</div><div class="ticker-item"><span class="sep">✦</span>WorkOS</div><div class="ticker-item"><span class="sep">✦</span>FinAI</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
+  </div>
+</div>
+
+<!-- TECH LOGOS STRIP -->
+<div class="tech-strip rv">
+  <div class="tech-label">Powered by world-class technology</div>
+  <div class="tech-logos">
+    <div class="tech-logo"><span class="tl-icon">🤖</span><span class="tl-name">Google Gemini</span></div>
+    <div class="tech-logo"><span class="tl-icon">🔷</span><span class="tl-name">Supabase</span></div>
+    <div class="tech-logo"><span class="tl-icon">📌</span><span class="tl-name">Pinecone</span></div>
+    <div class="tech-logo"><span class="tl-icon">▲</span><span class="tl-name">Vercel</span></div>
+    <div class="tech-logo"><span class="tl-icon">⬡</span><span class="tl-name">Next.js</span></div>
+    <div class="tech-logo"><span class="tl-icon">🔐</span><span class="tl-name">Clerk</span></div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products" class="sec">
+  <div class="prod-intro rv">
+    <div><span class="sec-label">Our products</span><h2 class="sec-title">AI built for<br>real problems.</h2></div>
+    <p class="sec-sub" style="max-width:300px">Four products. Four sectors. One company built for the whole world.</p>
+  </div>
+  <div class="bento rv d1">
+    <div class="bcard split featured span2">
+      <div>
+        <span class="bcard-tag tag-live">● Live · Free 3 months</span>
+        <span class="bcard-icon" style="margin-top:8px">🎓</span>
+        <div class="bcard-name">Academic Twin</div>
+        <p class="bcard-desc">An AI-powered personalized learning platform. Upload your study materials — the system becomes your intelligent academic companion with RAG-based chat, quizzes, flashcards, and adaptive study plans.</p>
+        <div class="bcard-tags"><span class="btag">EdTech</span><span class="btag">B2C + B2B</span><span class="btag">RAG</span><span class="btag">Next.js</span><span class="btag">Supabase</span><span class="btag">Pinecone</span></div>
+        <a href="academic-twin.html" class="bcard-link">Product page <span class="icon">→</span></a>
+        <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="bcard-link" style="margin-top:8px;color:var(--green)">Open app ↗</a>
+      </div>
+      <div class="bcard-visual"><div class="vis-text">AT</div></div>
+    </div>
+    <div class="bcard">
+      <span class="bcard-tag tag-soon">◐ Coming soon</span>
+      <span class="bcard-icon">🩺</span>
+      <div class="bcard-name">Veltron Health AI</div>
+      <p class="bcard-desc">Your personal AI health companion — symptom analysis, medication reminders, wellness tracking, and doctor-visit prep. Built for markets with limited specialist access.</p>
+      <div class="bcard-tags"><span class="btag">HealthTech</span><span class="btag">B2C</span><span class="btag">Multi-language</span></div>
+      <a href="health-ai.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
+    </div>
+    <div class="bcard">
+      <span class="bcard-tag tag-soon">◐ Coming soon</span>
+      <span class="bcard-icon">⚡</span>
+      <div class="bcard-name">Veltron WorkOS</div>
+      <p class="bcard-desc">AI-native workplace suite for modern teams. Meeting summaries, task automation, document drafting — built for SMEs who can't afford enterprise tooling.</p>
+      <div class="bcard-tags"><span class="btag">Productivity</span><span class="btag">B2B SaaS</span><span class="btag">API integrations</span></div>
+      <a href="workos.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
+    </div>
+    <div class="bcard span2" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+      <div>
+        <span class="bcard-tag tag-future">◯ Future</span>
+        <span class="bcard-icon" style="margin-top:8px">📈</span>
+        <div class="bcard-name">Veltron FinAI</div>
+        <p class="bcard-desc">Personal finance AI for the next billion — budgeting, investment analysis, tax planning, and financial literacy for emerging markets where financial advisory is inaccessible.</p>
+        <div class="bcard-tags"><span class="btag">FinTech</span><span class="btag">B2C + B2B</span><span class="btag">Emerging markets</span></div>
+        <a href="finai.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
+      </div>
+      <div style="border-radius:16px;background:linear-gradient(135deg,rgba(74,222,128,.07),rgba(34,211,238,.04));border:1px solid rgba(74,222,128,.1);height:160px;display:flex;align-items:center;justify-content:center">
+        <span style="font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹$£</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how" class="sec">
+  <div class="rv"><span class="sec-label">How we build</span><h2 class="sec-title">From idea to<br>intelligent product.</h2></div>
+  <div class="how-layout">
+    <div class="how-steps rv d1">
+      <div class="hstep"><span class="hstep-num">01</span><div><div class="hstep-title">Identify a real problem</div><p class="hstep-desc">Every Veltron product starts with a problem millions face — underserved students, overwhelmed workers, unbanked populations.</p></div></div>
+      <div class="hstep"><span class="hstep-num">02</span><div><div class="hstep-title">Build with state-of-the-art AI</div><p class="hstep-desc">We use LLMs, RAG, vector databases, and embedding models to build products that genuinely understand and adapt to users.</p></div></div>
+      <div class="hstep"><span class="hstep-num">03</span><div><div class="hstep-title">Ship globally, iterate fast</div><p class="hstep-desc">Products launch on cloud infrastructure designed for global scale — no regional limitations, no compromises on speed.</p></div></div>
+      <div class="hstep"><span class="hstep-num">04</span><div><div class="hstep-title">Grow under the Veltron umbrella</div><p class="hstep-desc">Each product is a sub-brand with its own identity, backed by shared infrastructure, design systems, and AI expertise.</p></div></div>
+    </div>
+    <div class="how-code rv d2">
+      <div class="code-top"><div class="cdot" style="background:#ff5f57"></div><div class="cdot" style="background:#febc2e"></div><div class="cdot" style="background:#28c840"></div><span class="cfile">academic-twin / rag-chat.ts</span></div>
+      <div class="code-body">
+        <div class="cl"><span class="ln">1</span><span class="cm">// Semantic search over user's documents</span></div>
+        <div class="cl"><span class="ln">2</span><span class="kw">const </span><span style="color:var(--white)">hits</span><span class="op"> = await </span><span class="fn">pinecone</span><span class="op">.</span><span class="fn">query</span>({</div>
+        <div class="cl"><span class="ln">3</span>&nbsp;&nbsp;<span style="color:var(--white)">vector</span><span class="op">: await </span><span class="fn">embed</span>(userMessage),</div>
+        <div class="cl"><span class="ln">4</span>&nbsp;&nbsp;<span style="color:var(--white)">topK</span><span class="op">: </span><span class="num">5</span><span class="op">, namespace</span>: userId</div>
+        <div class="cl"><span class="ln">5</span>});</div>
+        <div class="cl"><span class="ln">6</span>&nbsp;</div>
+        <div class="cl"><span class="ln">7</span><span class="cm">// Ground answer in student's own notes</span></div>
+        <div class="cl"><span class="ln">8</span><span class="kw">const </span><span style="color:var(--white)">stream</span><span class="op"> = await </span><span class="fn">gemini</span><span class="op">.</span><span class="fn">streamContent</span>({</div>
+        <div class="cl"><span class="ln">9</span>&nbsp;&nbsp;<span style="color:var(--white)">contents</span><span class="op">: </span><span class="fn">buildRAGPrompt</span>(hits, userMessage),</div>
+        <div class="cl"><span class="ln">10</span>});</div>
+        <div class="cl"><span class="ln">11</span><span class="kw">return </span><span class="fn">streamToResponse</span>(stream);<span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section id="vision">
+  <div class="vis-bg"></div><div class="vis-grid"></div>
+  <div class="rv" style="position:relative;z-index:1">
+    <span class="sec-label" style="display:inline-block;margin-bottom:24px">Our vision</span>
+    <h2 class="vis-title">AI should work for <span class="vis-em">everyone,</span><br>not just the privileged few.</h2>
+    <p class="vis-sub" style="margin-top:24px">Veltron Group is building a portfolio of AI products that give students, workers, patients, and entrepreneurs access to intelligence previously reserved for those who could afford it.</p>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section id="pillars" class="sec">
+  <div class="rv" style="text-align:center"><span class="sec-label">What we stand for</span><h2 class="sec-title">Built on three pillars.</h2></div>
+  <div class="pillars-row rv d1">
+    <div class="pill-cell"><span class="pill-n">01</span><div class="pill-t">Access</div><p class="pill-d">World-class AI tools shouldn't be gated by geography or income. We price for the world, not just the West.</p></div>
+    <div class="pill-cell"><span class="pill-n">02</span><div class="pill-t">Adaptability</div><p class="pill-d">Our products learn from every user. The more you use them, the smarter and more personalized they become.</p></div>
+    <div class="pill-cell"><span class="pill-n">03</span><div class="pill-t">Ambition</div><p class="pill-d">We're not building features. We're building the AI infrastructure for a smarter, more equitable world.</p></div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap" class="sec">
+  <div class="rv" style="text-align:center"><span class="sec-label">Where we're headed</span><h2 class="sec-title">The Veltron roadmap.</h2></div>
+  <div class="rm-wrap rv d1">
+    <div class="rm-line"></div>
+    <div class="rm-item"><div class="rm-dot on" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 1</span><span class="rm-yr">Now — 2025</span></div><div class="rm-t">Academic Twin Launch</div><p class="rm-d">Ship the flagship product — RAG-based AI chat, quiz generation, flashcards, analytics dashboard, and adaptive study planner. Launch in India and Southeast Asia with a freemium model.</p><div class="rm-pills"><span class="rp g">In progress</span><span class="rp">EdTech</span><span class="rp">B2C + B2B</span></div></div></div>
+    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 2</span><span class="rm-yr">2025 — Q1 2026</span></div><div class="rm-t">Veltron Group Brand + Seed Round</div><p class="rm-d">Launch the company website. Build Veltron brand identity. Use Academic Twin traction to raise seed or angel funding. Begin R&D on Health AI and WorkOS.</p><div class="rm-pills"><span class="rp a">Upcoming</span><span class="rp">Fundraising</span><span class="rp">Branding</span></div></div></div>
+    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 3</span><span class="rm-yr">2026</span></div><div class="rm-t">Health AI + WorkOS Beta</div><p class="rm-d">Launch Veltron Health AI and beta WorkOS for SME teams. Expand Academic Twin to US, UK, and Middle East markets.</p><div class="rm-pills"><span class="rp b">Planned</span><span class="rp">HealthTech</span><span class="rp">Productivity</span></div></div></div>
+    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 4</span><span class="rm-yr">2027+</span></div><div class="rm-t">FinAI + Series A</div><p class="rm-d">Launch Veltron FinAI targeting emerging markets. Raise Series A with multi-product revenue. Structure Veltron Group as a formal AI holding company.</p><div class="rm-pills"><span class="rp b">Future</span><span class="rp">FinTech</span><span class="rp">Series A</span></div></div></div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder" class="sec">
+  <div class="rv"><span class="sec-label">The founder</span></div>
+  <div class="founder-wrap rv d1">
+    <div class="founder-left">
+      <div class="favatarwrap"><div class="favatar">D</div><div class="fring"></div></div>
+      <div class="fname">Dinesh Karthick L</div>
+      <div class="frole">Founder & CEO, Veltron Group</div>
+      <div class="fsocials">
+        <a href="https://github.com/Dznzx" target="_blank" class="fsoc">GH</a>
+        <a href="#" class="fsoc">𝕏</a>
+        <a href="#" class="fsoc">in</a>
+      </div>
+    </div>
+    <div class="founder-right">
+      <h2 class="sec-title" style="font-size:2.2rem;margin-bottom:24px">Built from frustration.</h2>
+      <p class="fp">I'm a student developer who got tired of watching powerful AI tools stay locked behind paywalls — while the students, workers, and businesses who need them most couldn't afford access.</p>
+      <p class="fp">Veltron Group started with a single question: <em>what if the best AI products were built for everyone?</em> Academic Twin is the first answer. Health AI, WorkOS, and FinAI are next.</p>
+      <p class="fp">Building from Chennai, India — with a global market in mind and zero plans to slow down.</p>
+      <div class="fstats">
+        <div><div class="fstat-v">4+</div><div class="fstat-l">AI products building</div></div>
+        <div><div class="fstat-v">1</div><div class="fstat-l">Live flagship</div></div>
+        <div><div class="fstat-v">∞</div><div class="fstat-l">Ambition</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTORS -->
+<section id="investors" class="sec">
+  <div class="rv"><span class="sec-label">For investors</span><h2 class="sec-title">Back the next frontier.</h2></div>
+  <div class="inv-layout rv d1">
+    <div>
+      <p class="sec-sub" style="margin-bottom:32px">Veltron Group is raising its first round to accelerate Academic Twin and fund development of the next two products. Looking for angels and seed investors who believe AI should work for the whole world.</p>
+      <a href="mailto:invest@veltrongroup.ai" class="btn-p">Request pitch deck <span class="arr">→</span></a>
+    </div>
+    <div class="inv-stats">
+      <div class="inv-stat"><div class="iv">Seed</div><div class="il">Round stage</div></div>
+      <div class="inv-stat"><div class="iv">EdTech + 3</div><div class="il">Sectors targeted</div></div>
+      <div class="inv-stat"><div class="iv">Global</div><div class="il">Market from day one</div></div>
+      <div class="inv-stat"><div class="iv">Academic Twin</div><div class="il">Flagship, live build</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section id="waitlist" class="sec">
+  <div class="wl-wrap">
+    <div class="rv" style="text-align:center">
+      <span class="sec-label">Join the waitlist</span>
+      <h2 class="sec-title">Be first in line.</h2>
+      <p class="sec-sub" style="margin:12px auto 0;max-width:400px;text-align:center">Early access to Academic Twin and first updates on every Veltron product launch.</p>
+      <div class="wl-count" style="margin:24px auto 0;display:inline-flex"><span class="hb-dot"></span>&nbsp;127 people already on the waitlist</div>
+    </div>
+    <div class="rv d1">
+      <div class="wl-form" id="wl-form">
+        <input type="email" class="wl-input" id="wl-email" placeholder="your@email.com">
+        <button class="btn-p" onclick="joinWaitlist()">Join waitlist <span class="arr">→</span></button>
+      </div>
+      <div class="wl-success" id="wl-success">🎉 You're on the list! We'll reach out when Academic Twin launches.</div>
+      <p class="wl-note">No spam. Unsubscribe anytime. We hate spam as much as you do.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="sec">
+  <div class="contact-wrap">
+    <div class="rv" style="text-align:center"><span class="sec-label">Get in touch</span><h2 class="sec-title">Let's build<br>something great.</h2><p class="sec-sub" style="margin:12px auto 0;max-width:400px;text-align:center">Early access, partnerships, investment, or just saying hi — we're open.</p></div>
+    <div class="cform rv d1">
+      <div class="crow">
+        <div class="fg"><label class="fl">Name</label><input type="text" class="fi" placeholder="Your name"></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"></div>
+      </div>
+      <div class="fg"><label class="fl">I'm interested in</label><div class="ipills">
+        <button class="ipill on" onclick="this.classList.toggle('on')">Early access</button>
+        <button class="ipill" onclick="this.classList.toggle('on')">Investment</button>
+        <button class="ipill" onclick="this.classList.toggle('on')">Partnership</button>
+        <button class="ipill" onclick="this.classList.toggle('on')">Press / Media</button>
+        <button class="ipill" onclick="this.classList.toggle('on')">Just saying hi</button>
+      </div></div>
+      <div class="fg" style="margin-top:16px"><label class="fl">Message <span style="color:var(--muted);font-size:10px">(optional)</span></label><textarea class="fi" rows="4" placeholder="Tell us about yourself or what you're building..."></textarea></div>
+      <button class="btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="this.innerHTML='✓ Message sent!';this.style.background='linear-gradient(135deg,#16a34a,#15803d)'">Send message <span class="arr">→</span></button>
+    </div>
+    <div class="clinks rv d2">
+      <a href="mailto:hello@veltrongroup.ai" class="clink">📧 hello@veltrongroup.ai</a>
+      <a href="https://github.com/Dznzx" target="_blank" class="clink">⌥ github.com/Dznzx</a>
+      <a href="#" class="clink">𝕏 @veltrongroup</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="#" class="flogo">Veltron Group</a>
+  <div class="flinks"><a href="#products">Products</a><a href="#roadmap">Roadmap</a><a href="#founder">Founder</a><a href="#investors">Investors</a><a href="#contact">Contact</a></div>
+  <span class="fcopy">© 2025 Veltron Group of Companies</span>
+</footer>
+
+<!-- FLOATING BUTTONS -->
+<a href="https://wa.me/917845763698?text=Hi%2C+interested+in+Veltron+Group" target="_blank" id="wa" title="WhatsApp">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+<button id="chatbtn" onclick="toggleChat()">💬</button>
+<div id="chatw">
+  <div class="ch"><div class="ct"><span class="con"></span>Veltron AI</div><button class="cc" onclick="toggleChat()">✕</button></div>
+  <div class="cmsgs" id="cmsgs"><div class="cm bot">👋 Hey! I'm Veltron AI. Ask me anything about our products or company.</div></div>
+  <div class="cinput"><input class="ci" id="cinput" placeholder="Ask about Veltron..." onkeydown="if(event.key==='Enter')sendChat()"><button class="cs" onclick="sendChat()">↑</button></div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div id="cookie">
+  <div class="cookie-text">We use cookies to improve your experience. By continuing, you agree to our <a href="#">Privacy Policy</a>.</div>
+  <div class="cookie-btns">
+    <button class="cookie-acc" onclick="document.getElementById('cookie').remove()">Accept all</button>
+    <button class="cookie-dec" onclick="document.getElementById('cookie').remove()">Decline</button>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+document.querySelectorAll('a,button,.bcard,.hstep,.pill-cell,.rm-item,.tcard').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='14px';cur.style.height='14px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(91,127,255,.7)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(91,127,255,.4)'});
+});
+
+// SCROLL PROGRESS
+const prog=document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const pct=(scrollY/(document.body.scrollHeight-innerHeight))*100;
+  prog.style.width=pct+'%';
+  document.getElementById('nav').classList.toggle('s',scrollY>30);
+});
+
+// PARTICLES
+(function(){
+  const c=document.getElementById('c'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}resize();addEventListener('resize',resize);
+  class P{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.3+.4;this.a=Math.random()*.5+.15}}
+  for(let i=0;i<75;i++)pts.push(new P());
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(91,127,255,${p.a})`;ctx.fill()});
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<130){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(91,127,255,${.13*(1-d/130)})`;ctx.lineWidth=.6;ctx.stroke()}}));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// REVEAL
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(r=>io.observe(r));
+
+// MOBILE DRAWER
+function toggleDrawer(){const o=document.getElementById('drawer').classList.toggle('open');document.getElementById('hbg').classList.toggle('open',o);document.getElementById('overlay').classList.toggle('on',o)}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.getElementById('overlay').classList.remove('on')}
+
+// WAITLIST
+function joinWaitlist(){
+  const email=document.getElementById('wl-email').value.trim();
+  if(!email||!email.includes('@'))return;
+  document.getElementById('wl-form').style.display='none';
+  document.getElementById('wl-success').style.display='block';
+}
+
+// CHATBOT
+let chatOpen=false;
+function toggleChat(){chatOpen=!chatOpen;document.getElementById('chatw').classList.toggle('open',chatOpen);document.getElementById('chatbtn').textContent=chatOpen?'✕':'💬';if(chatOpen)document.getElementById('cinput').focus()}
+async function sendChat(){
+  const inp=document.getElementById('cinput'),msgs=document.getElementById('cmsgs');
+  const txt=inp.value.trim();if(!txt)return;inp.value='';
+  const um=document.createElement('div');um.className='cm usr';um.textContent=txt;msgs.appendChild(um);
+  const ty=document.createElement('div');ty.className='cm bot typing';ty.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';msgs.appendChild(ty);msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,system:`You are Veltron AI on the Veltron Group website. Be helpful, concise, enthusiastic. Key facts: Veltron Group is a global AI company with 4 products — Academic Twin (flagship, live build: RAG chat, quizzes, flashcards, analytics, study planner using Next.js/Supabase/Pinecone/Gemini), Health AI, WorkOS, FinAI. Founded by Dinesh from Chennai India. Seed stage. invest@veltrongroup.ai / hello@veltrongroup.ai. Keep responses under 3 sentences.`,messages:[{role:'user',content:txt}]})});
+    const d=await res.json();ty.remove();
+    const bm=document.createElement('div');bm.className='cm bot';bm.textContent=d.content?.[0]?.text||'Reach us at hello@veltrongroup.ai!';msgs.appendChild(bm);
+  }catch(e){ty.remove();const bm=document.createElement('div');bm.className='cm bot';bm.textContent='Something went wrong — email hello@veltrongroup.ai!';msgs.appendChild(bm);}
+  msgs.scrollTop=msgs.scrollHeight;
+}
+</script>
+<div id="ck" style="position:fixed;bottom:28px;left:28px;z-index:600;max-width:360px;background:#080c18;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);font-family:Inter,sans-serif">
+  <p style="font-size:13px;color:#7a82a0;line-height:1.6;margin-bottom:14px;font-weight:300">We use cookies to improve your experience. <a href="#" style="color:#5b7fff;text-decoration:none">Privacy Policy</a>.</p>
+  <div style="display:flex;gap:8px">
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,#5b7fff,#8b5cf6);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">Accept</button>
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 14px;border-radius:8px;background:transparent;color:#7a82a0;border:1px solid rgba(255,255,255,.1);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Decline</button>
+  </div>
+</div>
+<script>
+(function(){
+  var pf=document.createElement('div');pf.className='pgf';document.body.appendChild(pf);
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h=a.getAttribute('href');
+    if(!h||h[0]==='#'||h.indexOf('mailto')===0||h.indexOf('http')===0||h.indexOf('wa.me')>-1)return;
+    a.addEventListener('click',function(e){
+      e.preventDefault();pf.classList.add('out');
+      setTimeout(function(){window.location.href=h;},330);
+    });
+  });
+  window.addEventListener('pageshow',function(){pf.classList.remove('out');});
+})();
+</script>
+</body>
+</html>

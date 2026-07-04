@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Twin — Your AI Study Companion</title>
+<meta name="description" content="Upload your notes. Ask anything. Academic Twin is your personal AI tutor, available 24/7.">
+<meta property="og:title" content="Academic Twin — Your AI Study Companion">
+<meta property="og:description" content="Upload notes, get instant AI answers, auto-generate quizzes and flashcards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#04060f;--s1:#080c18;--s2:#0d1220;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--white:#eef0f8;--muted:#4a5070;--muted2:#7a82a0;--blue:#5b7fff;--purple:#8b5cf6;--cyan:#22d3ee;--green:#4ade80}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;font-weight:400;overflow-x:hidden;cursor:none}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:99997}
+
+/* CURSOR */
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--blue);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cur-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1px solid rgba(91,127,255,.4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .3s,height .3s,border-color .3s}
+
+/* SCROLL PROGRESS */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));z-index:10001;width:0%;transition:width .1s linear}
+
+/* CANVAS */
+#c{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.38}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;transition:background .5s,border-color .5s;border-bottom:1px solid transparent}
+nav.s{background:rgba(4,6,15,.82);backdrop-filter:blur(24px);border-color:var(--border)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white)}
+.nmark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff}
+.nname{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.02em}
+.nback{font-size:12px;color:var(--muted2);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;border:1px solid var(--border);padding:6px 14px;border-radius:8px}
+.nback:hover{color:var(--white);border-color:var(--border2)}
+.nbtn{font-size:13px;font-weight:500;padding:8px 20px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 28px rgba(91,127,255,.25);display:inline-block}
+.nbtn:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(91,127,255,.45)}
+/* hamburger */
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;border:none;background:none}
+.hbg span{display:block;width:22px;height:1.5px;background:var(--muted2);transition:all .3s;border-radius:2px}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.hbg.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+#drawer{position:fixed;top:0;right:0;width:280px;height:100vh;background:var(--s1);border-left:1px solid var(--border);z-index:999;transform:translateX(100%);transition:transform .4s cubic-bezier(.22,1,.36,1);padding:80px 32px 40px;display:flex;flex-direction:column;gap:8px}
+#drawer.open{transform:translateX(0)}
+.drawer-link{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--muted2);text-decoration:none;padding:12px 0;border-bottom:1px solid var(--border);transition:color .2s}
+.drawer-link:hover{color:var(--white)}
+.drawer-cta{margin-top:24px;padding:14px 20px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;text-decoration:none;font-size:14px;font-weight:500;text-align:center;display:block}
+#overlay{position:fixed;inset:0;background:rgba(4,6,15,.7);z-index:998;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.on{opacity:1;pointer-events:all}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 60px;position:relative;overflow:hidden;z-index:1}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,127,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(91,127,255,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 70% 70% at 50% 40%,black,transparent)}
+.hglow{position:absolute;width:800px;height:600px;top:50%;left:50%;transform:translate(-50%,-60%);background:radial-gradient(ellipse,rgba(91,127,255,.13) 0%,rgba(34,211,238,.06) 40%,transparent 70%);pointer-events:none;animation:hg 7s ease-in-out infinite alternate}
+@keyframes hg{from{transform:translate(-50%,-60%) scale(1)}to{transform:translate(-50%,-58%) scale(1.1)}}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);border:1px solid rgba(74,222,128,.2);padding:5px 14px;border-radius:100px;background:rgba(74,222,128,.06);margin-bottom:28px;opacity:0;animation:ri .7s .1s forwards}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blk 2s infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.3}}
+.htitle{font-family:'Syne',sans-serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:24px;opacity:0;animation:ri .9s .3s forwards}
+.tg{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.hsub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--muted2);max-width:480px;margin:0 auto 36px;line-height:1.75;font-weight:300;opacity:0;animation:ri .9s .5s forwards}
+.hbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:ri .9s .65s forwards;margin-bottom:64px}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;text-decoration:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 36px rgba(91,127,255,.25);cursor:none}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(91,127,255,.5)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:var(--white);border:1px solid var(--border2);text-decoration:none;transition:background .2s,border-color .2s,transform .2s;cursor:none}
+.btn-g:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
+.arr{transition:transform .2s}.btn-p:hover .arr,.btn-g:hover .arr{transform:translateX(3px)}
+@keyframes ri{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ANIMATED APP MOCKUP */
+.mockup{opacity:0;animation:ri .9s .8s forwards;max-width:860px;width:100%;position:relative}
+.mglow{position:absolute;inset:-40px;background:radial-gradient(ellipse at 50% 50%,rgba(91,127,255,.18),transparent 65%);filter:blur(24px);z-index:0;pointer-events:none}
+.mwin{position:relative;z-index:1;border-radius:18px;border:1px solid rgba(255,255,255,.1);overflow:hidden;background:var(--s1);box-shadow:0 48px 100px rgba(0,0,0,.7)}
+.mbar{background:var(--s2);padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.mdot{width:10px;height:10px;border-radius:50%}
+.murl{flex:1;background:rgba(255,255,255,.04);border-radius:6px;padding:5px 14px;font-size:11px;color:var(--muted);text-align:center;margin:0 16px}
+.mbody{display:grid;grid-template-columns:190px 1fr;height:320px}
+.mside{border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:3px}
+.mside-label{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;margin-bottom:4px}
+.mitem{padding:8px 12px;border-radius:8px;font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:8px;cursor:default;white-space:nowrap;transition:background .2s}
+.mitem.a{background:rgba(91,127,255,.12);color:var(--blue)}
+.mitem:hover{background:rgba(255,255,255,.04)}
+.mmain{padding:18px;display:flex;flex-direction:column;gap:10px;overflow:hidden;position:relative}
+.bubble{padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.6;max-width:82%;position:relative}
+.bubble.ai{background:rgba(91,127,255,.1);border:1px solid rgba(91,127,255,.15);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px}
+.bubble.ai::before{content:'✦ ';font-size:10px;color:var(--blue)}
+.bubble.u{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.bubble{opacity:0;transform:translateY(8px);transition:opacity .4s,transform .4s}
+.bubble.show{opacity:1;transform:translateY(0)}
+.typing-indicator{display:flex;gap:4px;align-items:center;padding:10px 14px;background:rgba(91,127,255,.08);border:1px solid rgba(91,127,255,.1);border-radius:12px;border-bottom-left-radius:3px;align-self:flex-start;opacity:0;transition:opacity .3s}
+.typing-indicator.show{opacity:1}
+.td{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:tdot .8s infinite}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes tdot{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+.minput{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.msend{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+
+/* SOCIAL PROOF STRIP */
+.sp-strip{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:24px 48px;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+.sp-item{display:flex;align-items:center;gap:12px;padding:0 48px;border-right:1px solid var(--border)}
+.sp-item:last-child{border-right:none}
+.sp-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--white),var(--muted2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sp-label{font-size:12px;color:var(--muted);font-weight:300;line-height:1.4}
+
+/* SECTION */
+.sec{padding:120px 48px;position:relative;z-index:1}
+.sec-label{display:block;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:16px}
+.sec-sub{font-size:1rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .85s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.22,1,.36,1)}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* FEATURES — alternating Linear-style */
+#features{background:var(--bg)}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 48px;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.feat:last-child{border-bottom:none}
+.feat.flip{direction:rtl}.feat.flip>*{direction:ltr}
+.feat-content .sec-title{font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:12px}
+.feat-content .sec-sub{max-width:400px}
+.feat-points{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:24px}
+.feat-points li{font-size:.875rem;color:var(--muted2);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.feat-points li::before{content:'→';color:var(--blue);flex-shrink:0;margin-top:1px}
+.feat-visual{border-radius:20px;border:1px solid var(--border);background:var(--s1);overflow:hidden;position:relative}
+.feat-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(91,127,255,.06),transparent 60%);pointer-events:none;z-index:0}
+
+/* RAG pipeline visual */
+.rag-wrap{padding:28px;position:relative;z-index:1}
+.rag-step{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+.rag-step:last-child{border-bottom:none}
+.rag-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rag-title{font-size:12px;color:var(--white);font-weight:500;margin-bottom:3px}
+.rag-sub{font-size:11px;color:var(--muted)}
+.rag-bar{height:2px;border-radius:2px;margin-top:6px;animation:pb 2s ease-in-out infinite alternate}
+@keyframes pb{from{opacity:.4}to{opacity:1}}
+
+/* Quiz visual */
+.quiz-wrap{padding:28px;position:relative;z-index:1}
+.quiz-q{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:14px;letter-spacing:-.01em;line-height:1.3}
+.qopt{padding:10px 14px;border-radius:9px;border:1px solid var(--border);font-size:12px;color:var(--muted2);margin-bottom:8px;display:flex;align-items:center;gap:10px;transition:all .2s}
+.qopt.correct{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08);color:var(--green)}
+.qopt.wrong{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);color:#f87171}
+.qmark{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.correct .qmark{background:rgba(74,222,128,.2);color:var(--green)}
+.wrong .qmark{background:rgba(239,68,68,.15);color:#f87171}
+.neutral .qmark{background:rgba(255,255,255,.05);color:var(--muted)}
+.quiz-result{margin-top:12px;padding:10px 14px;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);border-radius:9px;font-size:11px;color:var(--green);line-height:1.5}
+
+/* Analytics visual */
+.av-wrap{padding:28px;position:relative;z-index:1}
+.av-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:16px}
+.av-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.av-label{font-size:11px;color:var(--muted2);min-width:82px}
+.av-track{flex:1;height:6px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.av-fill{height:100%;border-radius:3px;animation:grow 1.5s ease forwards}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+.av-pct{font-size:11px;color:var(--muted);min-width:30px;text-align:right}
+.av-stats{display:flex;gap:0;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+.av-stat{flex:1;text-align:center;padding:0 12px;border-right:1px solid var(--border)}
+.av-stat:last-child{border-right:none}
+.av-stat-v{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:2px}
+.av-stat-l{font-size:10px;color:var(--muted)}
+
+/* HOW IT WORKS */
+#hiw{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:120px 48px}
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
+.hiw-cell{background:var(--bg);padding:36px 28px;transition:background .3s}
+.hiw-cell:hover{background:var(--s2)}
+.hiw-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.05em;color:rgba(91,127,255,.1);display:block;margin-bottom:16px;transition:color .3s}
+.hiw-cell:hover .hiw-num{color:rgba(91,127,255,.2)}
+.hiw-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px}
+.hiw-desc{font-size:.825rem;color:var(--muted2);line-height:1.65;font-weight:300}
+
+/* TESTIMONIALS */
+#testimonials{padding:120px 48px;position:relative;z-index:1}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:64px}
+.tcard{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:28px;transition:border-color .3s,transform .4s}
+.tcard:hover{border-color:rgba(91,127,255,.25);transform:translateY(-5px)}
+.tstars{color:#fbbf24;font-size:13px;letter-spacing:2px;margin-bottom:14px}
+.ttext{font-size:.875rem;color:var(--muted2);line-height:1.75;font-weight:300;font-style:italic;margin-bottom:20px}
+.tauthor{display:flex;align-items:center;gap:12px}
+.tavatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#fff;flex-shrink:0}
+.tname{font-size:.875rem;font-weight:500}
+.trole{font-size:.75rem;color:var(--muted)}
+
+/* FAQ */
+#faq{background:var(--s1);border-top:1px solid var(--border);padding:120px 48px}
+.faq-list{max-width:680px;margin:64px auto 0;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.faq-q{padding:18px 22px;font-size:.95rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color .2s;user-select:none}
+.faq-q:hover{color:var(--blue)}
+.faq-icon{font-size:18px;color:var(--muted);transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--blue)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1),padding .3s}
+.faq-a-inner{padding:0 22px 18px;font-size:.875rem;color:var(--muted2);line-height:1.75;font-weight:300}
+.faq-item.open .faq-a{max-height:200px}
+
+/* PRICING */
+#pricing{padding:120px 48px;position:relative;z-index:1}
+.urgency-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px;padding:12px 24px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.15);border-radius:100px;font-size:12px;color:#fbbf24;max-width:420px;margin-left:auto;margin-right:auto}
+.urgency-dot{width:6px;height:6px;border-radius:50%;background:#fbbf24;animation:blk 1.5s infinite}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;max-width:720px;margin:48px auto 0;background:var(--border);border-radius:24px;overflow:hidden;border:1px solid var(--border)}
+.plan{background:var(--bg);padding:40px}
+.plan.feat{background:linear-gradient(160deg,rgba(91,127,255,.09),var(--bg));position:relative}
+.plan.feat::before{content:'Most popular';position:absolute;top:20px;right:20px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:100px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+.plan-tier{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.plan-price{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;letter-spacing:-.04em;margin-bottom:4px}
+.plan-price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.plan-period{font-size:.8rem;color:var(--muted);margin-bottom:28px;font-weight:300}
+.plan-items{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-items li{font-size:.85rem;color:var(--muted2);display:flex;align-items:center;gap:10px}
+.plan-items li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.plan-items li.x{opacity:.35}
+.plan-items li.x::before{content:'✕';color:var(--muted)}
+
+/* WAITLIST */
+#waitlist{padding:120px 48px;background:var(--s1);border-top:1px solid var(--border);text-align:center}
+.wl-wrap{max-width:520px;margin:0 auto}
+.wl-count{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted2);padding:6px 14px;border-radius:100px;border:1px solid var(--border);background:rgba(255,255,255,.02);margin-bottom:24px}
+.wl-gdot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(74,222,128,.4);animation:pglow 2s infinite}
+@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}}
+.wl-form{display:flex;gap:8px;margin-top:32px;flex-wrap:wrap}
+.wl-input{flex:1;min-width:200px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+.wl-input:focus{border-color:rgba(91,127,255,.5);background:rgba(91,127,255,.03)}
+.wl-input::placeholder{color:var(--muted)}
+.wl-note{font-size:12px;color:var(--muted);margin-top:12px;font-weight:300}
+.wl-success{display:none;padding:16px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:10px;color:var(--green);font-size:14px;margin-top:16px}
+
+/* CTA BOTTOM */
+#cta-bottom{padding:160px 48px;text-align:center;position:relative;overflow:hidden;z-index:1}
+.cb-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(91,127,255,.09),transparent 70%);pointer-events:none}
+.cb-title{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,5.5rem);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:20px;position:relative;z-index:1}
+.cb-grad{background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cb-sub{font-size:1.05rem;color:var(--muted2);margin-bottom:40px;font-weight:300;position:relative;z-index:1}
+.cb-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+
+/* COOKIE */
+#cookie{position:fixed;bottom:28px;left:28px;z-index:600;max-width:360px;background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);animation:popIn .5s 3s cubic-bezier(.22,1,.36,1) both}
+.cookie-text{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:14px;font-weight:300}
+.cookie-text a{color:var(--blue);text-decoration:none}
+.cookie-btns{display:flex;gap:8px}
+.cookie-acc{padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif}
+.cookie-dec{padding:8px 14px;border-radius:8px;background:transparent;color:var(--muted2);border:1px solid var(--border);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.flogo{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--muted);text-decoration:none}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white)}
+.fcopy{font-size:12px;color:var(--muted)}
+@keyframes popIn{from{transform:scale(0) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+
+@media(max-width:900px){
+  nav{padding:0 20px} .hbg{display:flex}
+  #hero{padding:100px 20px 60px}
+  .mbody{grid-template-columns:1fr} .mside{display:none}
+  .feat{grid-template-columns:1fr;direction:ltr!important;padding:60px 20px;gap:40px}
+  #hiw,#testimonials,#faq,#pricing,#waitlist,#cta-bottom{padding:72px 20px}
+  .sec{padding:72px 20px}
+  .hiw-grid{grid-template-columns:1fr 1fr}
+  .test-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .sp-strip{gap:0;padding:20px;flex-direction:column}
+  .sp-item{border-right:none;border-bottom:1px solid var(--border);padding:16px 0;width:100%;justify-content:center}
+  .sp-item:last-child{border-bottom:none}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:24px 20px}
+  .flinks{flex-wrap:wrap;justify-content:center}
+  #cookie{left:16px;right:16px;max-width:none;bottom:16px}
+}
+</style>
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://veltrongroup.ai/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@veltrongroup">
+  <meta name="twitter:creator" content="@dineshkarthickl">
+<style>.pgf{position:fixed;inset:0;background:#04060f;z-index:99996;pointer-events:none;opacity:0;transition:opacity .35s ease}.pgf.out{opacity:1;pointer-events:all}</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="cur"></div><div id="cur-ring"></div>
+<canvas id="c"></canvas>
+
+<!-- MOBILE DRAWER -->
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <a href="#features" class="drawer-link" onclick="closeDrawer()">Features</a>
+  <a href="#hiw" class="drawer-link" onclick="closeDrawer()">How it works</a>
+  <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="drawer-link" onclick="closeDrawer()">Pricing</a>
+  <a href="#faq" class="drawer-link" onclick="closeDrawer()">FAQ</a>
+  <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="drawer-cta" onclick="closeDrawer()">Get early access →</a>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nback">← Veltron Group</a>
+  <a href="#" class="nlogo"><div class="nmark">AT</div><span class="nname">Academic Twin</span></a>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="nbtn">Get early access</a>
+    <button class="hbg" id="hbg" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hgrid"></div><div class="hglow"></div>
+  <div class="chip"><span class="cdot"></span>🚀 Live Now · Free for first 3 months</div>
+  <h1 class="htitle">Study smarter.<br><span class="tg">Your AI twin.</span></h1>
+  <p class="hsub">Upload your lecture notes, PDFs, or textbooks. Academic Twin reads them, understands them, and becomes your personal AI tutor — available 24/7.</p>
+  <div class="hbtns">
+    <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-p">Get early access <span class="arr">→</span></a>
+    <a href="#features" class="btn-g">See features <span class="arr">↓</span></a>
+  </div>
+  <!-- ANIMATED MOCKUP -->
+  <div class="mockup">
+    <div class="mglow"></div>
+    <div class="mwin">
+      <div class="mbar">
+        <div class="mdot" style="background:#ff5f57"></div>
+        <div class="mdot" style="background:#febc2e"></div>
+        <div class="mdot" style="background:#28c840"></div>
+        <div class="murl">app.academictwin.ai/chat</div>
+      </div>
+      <div class="mbody">
+        <div class="mside">
+          <div class="mside-label">Navigation</div>
+          <div class="mitem a"><span>💬</span> AI Chat</div>
+          <div class="mitem"><span>📄</span> Documents</div>
+          <div class="mitem"><span>🧠</span> Quiz</div>
+          <div class="mitem"><span>🗂</span> Flashcards</div>
+          <div class="mitem"><span>📊</span> Analytics</div>
+          <div class="mitem"><span>📅</span> Planner</div>
+        </div>
+        <div class="mmain" id="chat-demo">
+          <div class="minput" style="margin-top:0;margin-bottom:4px">
+            <span style="color:var(--muted)">Ask anything from your documents...</span>
+            <div class="msend">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="sp-strip">
+  <div class="sp-item"><div><div class="sp-val">RAG</div><div class="sp-label">Grounded in your<br>own notes</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">24/7</div><div class="sp-label">AI tutor<br>availability</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">&lt;60s</div><div class="sp-label">Upload to first<br>AI answer</div></div></div>
+  <div class="sp-item"><div><div class="sp-val">₹299</div><div class="sp-label">Pro plan<br>per month</div></div></div>
+</div>
+
+<!-- FEATURES -->
+<div id="features">
+  <div class="feat rv">
+    <div class="feat-content">
+      <span class="sec-label">AI Document Chat</span>
+      <h2 class="sec-title">Answers from<br>your own notes.</h2>
+      <p class="sec-sub">Ask anything in plain English. Academic Twin searches your uploaded materials using vector embeddings, then generates a grounded, cited answer — not generic internet content.</p>
+      <ul class="feat-points">
+        <li>Semantic search across all uploaded documents</li>
+        <li>Answers cite which page and document they came from</li>
+        <li>Understands context across chapters and subjects</li>
+        <li>Supports PDFs, lecture slides, notes, research papers</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="rag-wrap">
+        <div class="rag-step"><div class="rag-icon" style="background:rgba(91,127,255,.1)">📄</div><div><div class="rag-title">Document uploaded</div><div class="rag-sub">Organic Chemistry — Chapter 5.pdf</div><div class="rag-bar" style="width:100%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div></div>
+        <div class="rag-step"><div class="rag-icon" style="background:rgba(34,211,238,.08)">🔢</div><div><div class="rag-title">Converted to embeddings</div><div class="rag-sub">1,240 semantic chunks → Pinecone vector DB</div><div class="rag-bar" style="width:76%;background:linear-gradient(90deg,var(--cyan),var(--blue))"></div></div></div>
+        <div class="rag-step"><div class="rag-icon" style="background:rgba(74,222,128,.08)">🎯</div><div><div class="rag-title">Top 5 relevant chunks retrieved</div><div class="rag-sub">Cosine similarity search in &lt;100ms</div><div class="rag-bar" style="width:58%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div></div>
+        <div class="rag-step"><div class="rag-icon" style="background:rgba(139,92,246,.1)">✨</div><div><div class="rag-title">Gemini generates cited answer</div><div class="rag-sub">Streamed to you in real-time</div><div class="rag-bar" style="width:92%;background:linear-gradient(90deg,var(--purple),var(--blue))"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat flip rv d1">
+    <div class="feat-content">
+      <span class="sec-label">Auto Quiz Generation</span>
+      <h2 class="sec-title">Test yourself<br>in seconds.</h2>
+      <p class="sec-sub">Stop writing practice questions by hand. Academic Twin generates MCQ, short-answer, and true/false questions dynamically from any document — at whatever difficulty you choose.</p>
+      <ul class="feat-points">
+        <li>Multiple choice, short answer, and true/false formats</li>
+        <li>Difficulty slider — from easy to exam-hard</li>
+        <li>Focus on specific topics or entire chapters</li>
+        <li>Instant feedback with explanations from your notes</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="quiz-wrap">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:12px">Question 3 of 10 · Organic Chemistry · Hard</div>
+        <div class="quiz-q">Which mechanism involves backside attack with inversion of configuration?</div>
+        <div class="qopt correct"><span class="qmark">✓</span>SN2 — Bimolecular Nucleophilic Substitution</div>
+        <div class="qopt wrong"><span class="qmark">✕</span>SN1 — Unimolecular Nucleophilic Substitution</div>
+        <div class="qopt neutral"><span class="qmark">C</span>E2 — Bimolecular Elimination</div>
+        <div class="qopt neutral"><span class="qmark">D</span>E1cb — Carbanion Elimination</div>
+        <div class="quiz-result">✓ Correct! SN2 proceeds via a single transition state with Walden inversion — as covered on page 12 of your notes.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feat rv d2">
+    <div class="feat-content">
+      <span class="sec-label">Learning Analytics</span>
+      <h2 class="sec-title">Know exactly<br>where you stand.</h2>
+      <p class="sec-sub">Academic Twin tracks every quiz, session, and interaction. Your dashboard shows where you're strong, where you're struggling, and exactly what to study next.</p>
+      <ul class="feat-points">
+        <li>Topic-by-topic strength and weakness mapping</li>
+        <li>Study streak and consistency tracking</li>
+        <li>Quiz performance trends over time</li>
+        <li>AI-generated daily revision recommendations</li>
+      </ul>
+    </div>
+    <div class="feat-visual">
+      <div class="av-wrap">
+        <div class="av-title">Topic mastery — Organic Chemistry</div>
+        <div class="av-row"><span class="av-label">Alkanes</span><div class="av-track"><div class="av-fill" style="--w:92%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div><span class="av-pct">92%</span></div>
+        <div class="av-row"><span class="av-label">Alkenes</span><div class="av-track"><div class="av-fill" style="--w:78%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div></div><span class="av-pct">78%</span></div>
+        <div class="av-row"><span class="av-label">Nucleophilic</span><div class="av-track"><div class="av-fill" style="--w:45%;background:linear-gradient(90deg,#fbbf24,var(--blue))"></div></div><span class="av-pct">45%</span></div>
+        <div class="av-row"><span class="av-label">Aromatics</span><div class="av-track"><div class="av-fill" style="--w:31%;background:linear-gradient(90deg,#f87171,#fbbf24)"></div></div><span class="av-pct">31%</span></div>
+        <div class="av-row"><span class="av-label">Stereochem</span><div class="av-track"><div class="av-fill" style="--w:62%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div><span class="av-pct">62%</span></div>
+        <div class="av-stats">
+          <div class="av-stat"><div class="av-stat-v" style="color:var(--green)">12</div><div class="av-stat-l">Day streak</div></div>
+          <div class="av-stat"><div class="av-stat-v" style="color:var(--blue)">84</div><div class="av-stat-l">Quizzes done</div></div>
+          <div class="av-stat"><div class="av-stat-v" style="color:#fbbf24">73%</div><div class="av-stat-l">Avg score</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="hiw">
+  <div class="rv" style="text-align:center"><span class="sec-label">How it works</span><h2 class="sec-title">From upload to insight<br>in under 60 seconds.</h2></div>
+  <div class="hiw-grid rv d1">
+    <div class="hiw-cell"><span class="hiw-num">01</span><div class="hiw-title">Upload your materials</div><p class="hiw-desc">Drop any PDF, lecture note, textbook, or assignment. Multiple files, multiple subjects — all organized automatically.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">02</span><div class="hiw-title">AI builds your knowledge base</div><p class="hiw-desc">We extract, chunk, and embed your content into a personal vector database. Your documents become searchable semantic memory.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">03</span><div class="hiw-title">Chat, quiz & learn</div><p class="hiw-desc">Ask questions, generate quizzes, create flashcards, and get summaries — all grounded in your own uploaded material.</p></div>
+    <div class="hiw-cell"><span class="hiw-num">04</span><div class="hiw-title">Track & improve</div><p class="hiw-desc">Your AI twin learns your study habits, identifies weak topics, and builds a personalized revision plan that actually works.</p></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" class="sec">
+  <div class="rv" style="text-align:center"><span class="sec-label">Early feedback</span><h2 class="sec-title">Students love it.</h2></div>
+  <div class="test-grid rv d1">
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"I uploaded my entire semester's notes and it generated a full quiz in 30 seconds. Got an A on my midterm. This is actually insane."</p>
+      <div class="tauthor"><div class="tavatar" style="background:linear-gradient(135deg,var(--blue),var(--purple))">A</div><div><div class="tname">Aditya R.</div><div class="trole">Engineering, IIT Madras</div></div></div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"Having an AI that reads MY notes — not some generic textbook — is a game changer. The flashcard auto-gen saved me hours every week."</p>
+      <div class="tauthor"><div class="tavatar" style="background:linear-gradient(135deg,var(--cyan),var(--green))">P</div><div><div class="tname">Priya S.</div><div class="trole">MBBS Year 2, Medical College</div></div></div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <p class="ttext">"The analytics showed I was weak in thermodynamics — I'd never have spotted it myself. Two weeks later it's my strongest topic."</p>
+      <div class="tauthor"><div class="tavatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">K</div><div><div class="tname">Karthik M.</div><div class="trole">CA Student, ICAI</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="rv" style="text-align:center"><span class="sec-label">FAQ</span><h2 class="sec-title">Questions answered.</h2></div>
+  <div class="faq-list rv d1">
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What file types can I upload?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Currently we support PDF files, with support for Word documents, PowerPoint slides, images (via OCR), and plain text coming soon. You can upload multiple files per subject and organize them into folders.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my data private and secure?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Yes. Every user gets their own isolated namespace in our vector database. Your documents are never shared with other users or used to train our AI models. We use Supabase Row Level Security and Clerk authentication for enterprise-grade security.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How is this different from ChatGPT?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">ChatGPT answers from generic training data. Academic Twin answers from your specific uploaded materials using Retrieval-Augmented Generation (RAG). Every answer is grounded in your own notes and cites exactly which page and document it came from.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">When will Academic Twin launch?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Academic Twin is live right now! Go to academic-twin-rouge.vercel.app to sign up for free. First 3 months are completely free, then ₹50/month.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a student discount?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Yes — we're building this for students, so our Pro plan at ₹299/month (~$3.50 USD) already reflects student-friendly global pricing. We'll also offer institutional bulk pricing for universities and coaching centres.</div></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can my university or school use Academic Twin?<span class="faq-icon">+</span></div><div class="faq-a"><div class="faq-a-inner">Absolutely. We're building B2B institutional plans with teacher dashboards, class analytics, and bulk student licensing. Email us at hello@veltrongroup.ai to discuss a partnership.</div></div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="sec">
+  <div class="rv" style="text-align:center">
+    <span class="sec-label">Pricing</span>
+    <h2 class="sec-title">Simple, honest pricing.</h2>
+    <p class="sec-sub" style="margin:12px auto 0;max-width:380px;text-align:center">Start free. Upgrade when you need more. Cancel anytime.</p>
+  </div>
+  <div class="rv d1" style="text-align:center">
+    <div class="urgency-bar"><span class="urgency-dot"></span>🎉 Launched! First 3 months free — then only ₹50/month</div>
+  </div>
+  <div class="pricing-grid rv d2">
+    <div class="plan">
+      <div class="plan-tier">Free forever</div>
+      <div class="plan-price">Free <span>/ 3 months</span></div>
+      <div class="plan-period">No credit card needed · Then ₹50/month</div>
+      <ul class="plan-items">
+        <li>3 document uploads</li>
+        <li>50 AI chat messages / month</li>
+        <li>Basic quiz generation</li>
+        <li>Flashcard creation</li>
+        <li class="x">Advanced analytics</li>
+        <li class="x">Adaptive study planner</li>
+        <li class="x">Unlimited uploads</li>
+      </ul>
+      <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-g" style="width:100%;justify-content:center">Get started free</a>
+    </div>
+    <div class="plan feat">
+      <div class="plan-tier">Pro</div>
+      <div class="plan-price">₹50 <span>/ month</span></div>
+      <div class="plan-period">~$0.60 USD · after free period · cancel anytime</div>
+      <ul class="plan-items">
+        <li>Unlimited document uploads</li>
+        <li>Unlimited AI chat</li>
+        <li>Advanced quiz generation</li>
+        <li>Smart flashcard decks</li>
+        <li>Full analytics dashboard</li>
+        <li>Adaptive study planner</li>
+        <li>Priority AI responses</li>
+      </ul>
+      <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-p" style="width:100%;justify-content:center">Start free trial <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section id="waitlist" style="padding:120px 48px;background:var(--s1);border-top:1px solid var(--border);text-align:center">
+  <div style="max-width:560px;margin:0 auto" class="rv">
+    <span class="sec-label">Now live</span>
+    <h2 class="sec-title">Academic Twin is live.<br>Start for free today.</h2>
+    <p class="sec-sub" style="margin:12px auto 0;text-align:center">First 3 months completely free — no credit card required. Then just ₹50/month.</p>
+    <div style="margin-top:36px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-p" style="padding:16px 36px;font-size:15px">Start for free →</a>
+      <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-g" style="padding:16px 36px;font-size:15px">Open app ↗</a>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:16px;font-weight:300">No credit card needed · Free for 3 months · ₹50/month after</p>
+  </div>
+</section>
+
+<!-- CTA BOTTOM -->
+<section id="cta-bottom">
+  <div class="cb-glow"></div>
+  <div class="rv">
+    <h2 class="cb-title">Your AI twin is<br><span class="cb-grad">waiting for you.</span></h2>
+    <p class="cb-sub">Your AI study companion is live. Start free for 3 months.</p>
+    <div class="cb-btns">
+      <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="btn-p">Get early access <span class="arr">→</span></a>
+      <a href="index.html" class="btn-g">← Veltron Group</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="flogo">Academic Twin by Veltron</a>
+  <div class="flinks"><a href="#features">Features</a><a href="#hiw">How it works</a><a href="https://academic-twin-rouge.vercel.app" target="_blank">Pricing</a><a href="#faq">FAQ</a><a href="index.html#contact">Contact</a></div>
+  <span class="fcopy">© 2025 Veltron Group</span>
+</footer>
+
+<!-- COOKIE -->
+<div id="cookie">
+  <div class="cookie-text">We use cookies to improve your experience. <a href="#">Privacy Policy</a>.</div>
+  <div class="cookie-btns">
+    <button class="cookie-acc" onclick="document.getElementById('cookie').remove()">Accept</button>
+    <button class="cookie-dec" onclick="document.getElementById('cookie').remove()">Decline</button>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+document.querySelectorAll('a,button,.tcard,.hiw-cell,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='14px';cur.style.height='14px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(91,127,255,.7)'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='36px';ring.style.height='36px';ring.style.borderColor='rgba(91,127,255,.4)'});
+});
+
+// SCROLL PROGRESS + NAV
+const prog=document.getElementById('progress'),nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  prog.style.width=((scrollY/(document.body.scrollHeight-innerHeight))*100)+'%';
+  nav.classList.toggle('s',scrollY>30);
+});
+
+// PARTICLES
+(function(){
+  const c=document.getElementById('c'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}resize();addEventListener('resize',resize);
+  class P{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.r=Math.random()*1.2+.3;this.a=Math.random()*.45+.1}}
+  for(let i=0;i<65;i++)pts.push(new P());
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(91,127,255,${p.a})`;ctx.fill()});
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(91,127,255,${.11*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}}));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// REVEAL
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('.rv').forEach(r=>io.observe(r));
+
+// MOBILE DRAWER
+function toggleDrawer(){const o=document.getElementById('drawer').classList.toggle('open');document.getElementById('hbg').classList.toggle('open',o);document.getElementById('overlay').classList.toggle('on',o)}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.getElementById('overlay').classList.remove('on')}
+
+// FAQ ACCORDION
+function toggleFaq(el){
+  const item=el.parentElement;
+  document.querySelectorAll('.faq-item').forEach(i=>{if(i!==item)i.classList.remove('open')});
+  item.classList.toggle('open');
+}
+
+// WAITLIST
+function joinWaitlist(){
+  const email=document.getElementById('wl-email').value.trim();
+  if(!email||!email.includes('@')){document.getElementById('wl-email').style.borderColor='rgba(239,68,68,.5)';return}
+  document.getElementById('wl-form').style.display='none';
+  document.getElementById('wl-success').style.display='block';
+}
+
+// ANIMATED CHAT DEMO
+(function(){
+  const demo=document.getElementById('chat-demo');
+  const conv=[
+    {type:'ai',text:"I've processed your Organic Chemistry PDF (68 pages, 42 key concepts). What would you like to explore?"},
+    {type:'u',text:"Explain nucleophilic substitution with an example"},
+    {type:'ai',text:"In SN2 reactions, a nucleophile attacks a carbon from the back, displacing the leaving group and inverting stereochemistry. Example: Br⁻ attacks CH₃Br → CH₃Br + Br⁻. Your notes on page 12 cover this with diagrams."},
+    {type:'u',text:"Generate a quiz on this topic"},
+    {type:'ai',text:"Quiz generated! 10 questions on nucleophilic substitution — ranging from easy recall to exam-hard mechanism problems. Starting now... ✓"}
+  ];
+  let i=0;
+  const minput=demo.querySelector('.minput');
+
+  function addBubble(msg){
+    return new Promise(resolve=>{
+      if(msg.type==='ai'){
+        // show typing first
+        const ty=document.createElement('div');
+        ty.className='typing-indicator show';
+        ty.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';
+        demo.insertBefore(ty,minput);
+        setTimeout(()=>{
+          ty.remove();
+          const b=document.createElement('div');
+          b.className='bubble ai';b.textContent=msg.text;
+          demo.insertBefore(b,minput);
+          requestAnimationFrame(()=>requestAnimationFrame(()=>b.classList.add('show')));
+          resolve();
+        },1200);
+      } else {
+        const b=document.createElement('div');
+        b.className='bubble u';b.textContent=msg.text;
+        demo.insertBefore(b,minput);
+        requestAnimationFrame(()=>requestAnimationFrame(()=>b.classList.add('show')));
+        setTimeout(resolve,400);
+      }
+    });
+  }
+
+  async function runDemo(){
+    while(true){
+      // clear old bubbles
+      demo.querySelectorAll('.bubble').forEach(b=>b.remove());
+      i=0;
+      for(const msg of conv){
+        await new Promise(r=>setTimeout(r, msg.type==='u'?800:400));
+        await addBubble(msg);
+      }
+      // pause then restart
+      await new Promise(r=>setTimeout(r,4000));
+    }
+  }
+
+  // Start demo after hero animations
+  setTimeout(runDemo, 1400);
+})();
+</script>
+<a href="https://wa.me/917845763698?text=Hi%2C+I%27m+interested+in+Veltron+Group" target="_blank" id="wa-float" title="WhatsApp" style="position:fixed;bottom:28px;right:28px;z-index:500;width:52px;height:52px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);text-decoration:none;animation:popIn .5s 2s cubic-bezier(.22,1,.36,1) both"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a><div id="ck" style="position:fixed;bottom:28px;left:28px;z-index:600;max-width:360px;background:#080c18;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px 24px;box-shadow:0 16px 48px rgba(0,0,0,.5);font-family:Inter,sans-serif">
+  <p style="font-size:13px;color:#7a82a0;line-height:1.6;margin-bottom:14px;font-weight:300">We use cookies to improve your experience. <a href="#" style="color:#5b7fff;text-decoration:none">Privacy Policy</a>.</p>
+  <div style="display:flex;gap:8px">
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,#5b7fff,#8b5cf6);color:#fff;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">Accept</button>
+    <button onclick="document.getElementById('ck').remove()" style="padding:8px 14px;border-radius:8px;background:transparent;color:#7a82a0;border:1px solid rgba(255,255,255,.1);font-size:12px;cursor:pointer;font-family:Inter,sans-serif">Decline</button>
+  </div>
+</div>
+<script>
+(function(){
+  var pf=document.createElement('div');pf.className='pgf';document.body.appendChild(pf);
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h=a.getAttribute('href');
+    if(!h||h[0]==='#'||h.indexOf('mailto')===0||h.indexOf('http')===0||h.indexOf('wa.me')>-1)return;
+    a.addEventListener('click',function(e){
+      e.preventDefault();pf.classList.add('out');
+      setTimeout(function(){window.location.href=h;},330);
+    });
+  });
+  window.addEventListener('pageshow',function(){pf.classList.remove('out');});
+})();
+</script>
+</body>
+</html>
