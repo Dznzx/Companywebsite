@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1128 191">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04060f"/>
+      <stop offset="1" stop-color="#0d1220"/>
+    </linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b7fff"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1128" height="191" fill="url(#bg)"/>
+  <rect x="80" y="55" width="80" height="80" rx="20" fill="url(#g3)"/>
+  <path d="M105 80 L120 116 L135 80" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="120" cy="116" r="3.2" fill="#22d3ee"/>
+  <text x="185" y="105" font-family="Syne, sans-serif" font-size="42" font-weight="800" fill="#eef0f8" letter-spacing="-1">Veltron Group</text>
+  <text x="185" y="135" font-family="Inter, sans-serif" font-size="17" fill="#7a82a0">AI products for students, professionals, and businesses</text>
+</svg>

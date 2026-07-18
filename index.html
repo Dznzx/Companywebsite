@@ -5,9 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Veltron Group — AI for Everyone</title>
 <meta name="description" content="Veltron Group builds AI products for students, professionals and businesses — across every sector, on every continent.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta property="og:title" content="Veltron Group — AI for Everyone">
 <meta property="og:description" content="Academic Twin, Health AI, WorkOS, FinAI — AI built for the world.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="favicon.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Veltron Group — AI for Everyone">
+<meta name="twitter:description" content="Academic Twin, Health AI, WorkOS, FinAI — AI built for the world.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -374,8 +379,8 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
 <div id="drawer">
   <a href="#products" class="drawer-link" onclick="closeDrawer()">Products</a>
   <a href="#services" class="drawer-link" onclick="closeDrawer()">Services</a>
+  <a href="#custom-builds" class="drawer-link" onclick="closeDrawer()">Custom Builds</a>
   <a href="#projects" class="drawer-link" onclick="closeDrawer()">Projects</a>
-  <a href="#roadmap" class="drawer-link" onclick="closeDrawer()">Roadmap</a>
   <a href="#founder" class="drawer-link" onclick="closeDrawer()">Founder</a>
   <a href="#investors" class="drawer-link" onclick="closeDrawer()">Investors</a>
   <a href="#contact" class="drawer-link" onclick="closeDrawer()">Contact</a>
@@ -384,12 +389,12 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="#" class="nlogo"><div class="nmark">V</div><span class="nname">Veltron Group</span></a>
+  <a href="#" class="nlogo"><img src="logo-icon.svg" alt="Veltron Group" style="width:30px;height:30px;border-radius:8px;flex-shrink:0"><span class="nname">Veltron Group</span></a>
   <ul class="nlinks">
     <li><a href="#products">Products</a></li>
     <li><a href="#services">Services</a></li>
+    <li><a href="#custom-builds">Custom Builds</a></li>
     <li><a href="#projects">Projects</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#founder">Founder</a></li>
     <li><a href="#investors">Investors</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -505,6 +510,27 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   </div>
 </section>
 
+<!-- CUSTOM BUILDS -->
+<section id="custom-builds" class="sec">
+  <div class="prod-intro rv">
+    <div><span class="sec-label">Custom builds</span><h2 class="sec-title">Tell us the<br>problem. We build it.</h2></div>
+    <p class="sec-sub" style="max-width:300px">Some of our best products started as one company's enquiry — a specific operational headache with no off-the-shelf fix.</p>
+  </div>
+  <div class="bento rv d1">
+    <div class="bcard split featured span2">
+      <div>
+        <span class="bcard-tag tag-live">● Built from real enquiries</span>
+        <span class="bcard-icon" style="margin-top:8px">🛠️</span>
+        <div class="bcard-name">Internal Tools & Business Systems</div>
+        <p class="bcard-desc">Invoice generators, stock and inventory trackers, order management dashboards, quoting tools — purpose-built software for how a specific business actually operates, not a generic template forced to fit. A company tells us the workflow that's slowing them down; we ship a working tool around it.</p>
+        <div class="bcard-tags"><span class="btag">Invoicing</span><span class="btag">Inventory & stock</span><span class="btag">Order management</span><span class="btag">Internal dashboards</span><span class="btag">Workflow automation</span></div>
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap"><a href="#contact" class="bcard-link" style="margin-top:0">Tell us your problem <span class="icon">→</span></a></div>
+      </div>
+      <div class="bcard-visual"><div class="vis-text">CB</div></div>
+    </div>
+  </div>
+</section>
+
 <!-- HOW -->
 
 <!-- PROJECTS -->
@@ -586,7 +612,7 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
     <div class="how-steps rv d1">
       <div class="hstep"><span class="hstep-num">01</span><div><div class="hstep-title">Identify a real problem</div><p class="hstep-desc">Every Veltron product starts with a problem millions face — underserved students, overwhelmed workers, unbanked populations.</p></div></div>
       <div class="hstep"><span class="hstep-num">02</span><div><div class="hstep-title">Build with state-of-the-art AI</div><p class="hstep-desc">We use LLMs, RAG, vector databases, and embedding models to build products that genuinely understand and adapt to users.</p></div></div>
-      <div class="hstep"><span class="hstep-num">03</span><div><div class="hstep-title">Ship globally, iterate fast</div><p class="hstep-desc">Products launch on cloud infrastructure designed for global scale — no regional limitations, no compromises on speed.</p></div></div>
+      <div class="hstep"><span class="hstep-num">03</span><div><div class="hstep-title">Ship fast, iterate faster</div><p class="hstep-desc">Products launch on modern cloud infrastructure built to scale as usage grows, with no compromises on speed.</p></div></div>
       <div class="hstep"><span class="hstep-num">04</span><div><div class="hstep-title">Grow under the Veltron umbrella</div><p class="hstep-desc">Each product is a sub-brand with its own identity, backed by shared infrastructure, design systems, and AI expertise.</p></div></div>
     </div>
     <div class="how-code rv d2">
@@ -628,17 +654,6 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   </div>
 </section>
 
-<!-- ROADMAP -->
-<section id="roadmap" class="sec">
-  <div class="rv" style="text-align:center"><span class="sec-label">Where we're headed</span><h2 class="sec-title">The Veltron roadmap.</h2></div>
-  <div class="rm-wrap rv d1">
-    <div class="rm-line"></div>
-    <div class="rm-item"><div class="rm-dot on" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 1</span><span class="rm-yr">Now — 2025</span></div><div class="rm-t">Academic Twin Launch</div><p class="rm-d">Ship the flagship product — RAG-based AI chat, quiz generation, flashcards, analytics dashboard, and adaptive study planner. Launch in India and Southeast Asia with a freemium model.</p><div class="rm-pills"><span class="rp g">In progress</span><span class="rp">EdTech</span><span class="rp">B2C + B2B</span></div></div></div>
-    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 2</span><span class="rm-yr">2025 — Q1 2026</span></div><div class="rm-t">Veltron Group Brand + Seed Round</div><p class="rm-d">Launch the company website. Build Veltron brand identity. Use Academic Twin traction to raise seed or angel funding. Begin R&D on Health AI and WorkOS.</p><div class="rm-pills"><span class="rp a">Upcoming</span><span class="rp">Fundraising</span><span class="rp">Branding</span></div></div></div>
-    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 3</span><span class="rm-yr">2026</span></div><div class="rm-t">Health AI + WorkOS Beta</div><p class="rm-d">Launch Veltron Health AI and beta WorkOS for SME teams. Expand Academic Twin to US, UK, and Middle East markets.</p><div class="rm-pills"><span class="rp b">Planned</span><span class="rp">HealthTech</span><span class="rp">Productivity</span></div></div></div>
-    <div class="rm-item"><div class="rm-dot" style="margin-left:14px"></div><div class="rm-card"><div class="rm-meta"><span class="rm-ph">Phase 4</span><span class="rm-yr">2027+</span></div><div class="rm-t">FinAI + Series A</div><p class="rm-d">Launch Veltron FinAI targeting emerging markets. Raise Series A with multi-product revenue. Structure Veltron Group as a formal AI holding company.</p><div class="rm-pills"><span class="rp b">Future</span><span class="rp">FinTech</span><span class="rp">Series A</span></div></div></div>
-  </div>
-</section>
 
 <!-- FOUNDER -->
 <section id="founder" class="sec">
@@ -650,8 +665,8 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
       <div class="frole">Founder & CEO, Veltron Group</div>
       <div class="fsocials">
         <a href="https://github.com/Dznzx" target="_blank" class="fsoc">GH</a>
-        <a href="#" class="fsoc">𝕏</a>
-        <a href="#" class="fsoc">in</a>
+        <a href="https://www.instagram.com/veltrongroupai/" target="_blank" class="fsoc">IG</a>
+        <a href="https://www.linkedin.com/in/veltron-group-392222423" target="_blank" class="fsoc">in</a>
       </div>
     </div>
     <div class="founder-right">
@@ -673,11 +688,11 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   <div class="rv"><span class="sec-label">For investors</span><h2 class="sec-title">Back the next frontier.</h2></div>
   <div class="inv-layout rv d1">
     <div>
-      <p class="sec-sub" style="margin-bottom:32px">Veltron Group is raising its first round to accelerate Academic Twin and fund development of the next two products. Looking for angels and seed investors who believe AI should work for the whole world.</p>
-      <a href="mailto:invest@veltrongroup.ai" class="btn-p">Request pitch deck <span class="arr">→</span></a>
+      <p class="sec-sub" style="margin-bottom:32px">Veltron Group is building toward its first funding round to accelerate Academic Twin and fund development of the next two products. Open to conversations with angels and early-stage investors who believe AI should work for the whole world.</p>
+      <a href="mailto:veltrongroupai@gmail.com" class="btn-p">Request pitch deck <span class="arr">→</span></a>
     </div>
     <div class="inv-stats">
-      <div class="inv-stat"><div class="iv">Seed</div><div class="il">Round stage</div></div>
+      <div class="inv-stat"><div class="iv">Pre-seed</div><div class="il">Round stage</div></div>
       <div class="inv-stat"><div class="iv">EdTech + 3</div><div class="il">Sectors targeted</div></div>
       <div class="inv-stat"><div class="iv">Global</div><div class="il">Market from day one</div></div>
       <div class="inv-stat"><div class="iv">Academic Twin</div><div class="il">Flagship, live build</div></div>
@@ -692,13 +707,14 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
       <span class="sec-label">Join the waitlist</span>
       <h2 class="sec-title">Be first in line.</h2>
       <p class="sec-sub" style="margin:12px auto 0;max-width:400px;text-align:center">Early access to Academic Twin and first updates on every Veltron product launch.</p>
-      <div class="wl-count" style="margin:24px auto 0;display:inline-flex"><span class="hb-dot"></span>&nbsp;127 people already on the waitlist</div>
     </div>
     <div class="rv d1">
-      <div class="wl-form" id="wl-form">
-        <input type="email" class="wl-input" id="wl-email" placeholder="your@email.com">
-        <button class="btn-p" onclick="joinWaitlist()">Join waitlist <span class="arr">→</span></button>
-      </div>
+      <form class="wl-form" id="wl-form" action="https://formsubmit.co/veltrongroupai@gmail.com" method="POST" onsubmit="return joinWaitlist(event)">
+        <input type="hidden" name="_subject" value="New waitlist signup — Veltron Group website">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="email" class="wl-input" id="wl-email" name="Email" placeholder="your@email.com" required>
+        <button class="btn-p" type="submit">Join waitlist <span class="arr">→</span></button>
+      </form>
       <div class="wl-success" id="wl-success">🎉 You're on the list! We'll reach out when Academic Twin launches.</div>
       <p class="wl-note">No spam. Unsubscribe anytime. We hate spam as much as you do.</p>
     </div>
@@ -709,32 +725,37 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
 <section id="contact" class="sec">
   <div class="contact-wrap">
     <div class="rv" style="text-align:center"><span class="sec-label">Get in touch</span><h2 class="sec-title">Let's build<br>something great.</h2><p class="sec-sub" style="margin:12px auto 0;max-width:400px;text-align:center">Early access, partnerships, investment, or just saying hi — we're open.</p></div>
-    <div class="cform rv d1">
+    <form class="cform rv d1" action="https://formsubmit.co/veltrongroupai@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="New enquiry — Veltron Group website">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
       <div class="crow">
-        <div class="fg"><label class="fl">Name</label><input type="text" class="fi" placeholder="Your name"></div>
-        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"></div>
+        <div class="fg"><label class="fl">Name</label><input type="text" name="Name" class="fi" placeholder="Your name" required></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" name="Email" class="fi" placeholder="your@email.com" required></div>
       </div>
       <div class="fg"><label class="fl">I'm interested in</label><div class="ipills">
-        <button class="ipill on" onclick="this.classList.toggle('on')">Early access</button>
-        <button class="ipill" onclick="this.classList.toggle('on')">Investment</button>
-        <button class="ipill" onclick="this.classList.toggle('on')">Partnership</button>
-        <button class="ipill" onclick="this.classList.toggle('on')">Press / Media</button>
-        <button class="ipill" onclick="this.classList.toggle('on')">Just saying hi</button>
+        <button type="button" class="ipill on" onclick="this.classList.toggle('on')">Early access</button>
+        <button type="button" class="ipill" onclick="this.classList.toggle('on')">Investment</button>
+        <button type="button" class="ipill" onclick="this.classList.toggle('on')">Partnership</button>
+        <button type="button" class="ipill" onclick="this.classList.toggle('on')">Press / Media</button>
+        <button type="button" class="ipill" onclick="this.classList.toggle('on')">Just saying hi</button>
       </div></div>
-      <div class="fg" style="margin-top:16px"><label class="fl">Message <span style="color:var(--muted);font-size:10px">(optional)</span></label><textarea class="fi" rows="4" placeholder="Tell us about yourself or what you're building..."></textarea></div>
-      <button class="btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="this.innerHTML='✓ Message sent!';this.style.background='linear-gradient(135deg,#16a34a,#15803d)'">Send message <span class="arr">→</span></button>
-    </div>
+      <input type="hidden" name="Interested in" id="interestedField">
+      <div class="fg" style="margin-top:16px"><label class="fl">Message <span style="color:var(--muted);font-size:10px">(optional)</span></label><textarea name="Message" class="fi" rows="4" placeholder="Tell us about yourself or what you're building..."></textarea></div>
+      <button class="btn-p" type="submit" style="width:100%;justify-content:center;margin-top:8px" onclick="document.getElementById('interestedField').value=[...document.querySelectorAll('.ipill.on')].map(b=>b.textContent).join(', ')">Send message <span class="arr">→</span></button>
+    </form>
     <div class="clinks rv d2">
-      <a href="mailto:hello@veltrongroup.ai" class="clink">📧 hello@veltrongroup.ai</a>
+      <a href="mailto:veltrongroupai@gmail.com" class="clink">📧 veltrongroupai@gmail.com</a>
       <a href="https://github.com/Dznzx" target="_blank" class="clink">⌥ github.com/Dznzx</a>
-      <a href="#" class="clink">𝕏 @veltrongroup</a>
+      <a href="https://www.linkedin.com/in/veltron-group-392222423" target="_blank" class="clink">in LinkedIn</a>
+      <a href="https://www.instagram.com/veltrongroupai/" target="_blank" class="clink">📷 Instagram</a>
     </div>
   </div>
 </section>
 
 <footer>
-  <a href="#" class="flogo">Veltron Group</a>
-  <div class="flinks"><a href="#products">Products</a><a href="#services">Services</a><a href="#roadmap">Roadmap</a><a href="#founder">Founder</a><a href="#investors">Investors</a><a href="#contact">Contact</a></div>
+  <a href="#" class="flogo" style="display:flex;align-items:center;gap:8px"><img src="logo-icon.svg" alt="Veltron Group" style="width:22px;height:22px;border-radius:6px">Veltron Group</a>
+  <div class="flinks"><a href="#products">Products</a><a href="#services">Services</a><a href="#custom-builds">Custom Builds</a><a href="#founder">Founder</a><a href="#investors">Investors</a><a href="#contact">Contact</a><a href="mailto:veltrongroupai@gmail.com">Email</a><a href="https://www.linkedin.com/in/veltron-group-392222423" target="_blank">LinkedIn</a><a href="https://www.instagram.com/veltrongroupai/" target="_blank">Instagram</a></div>
   <span class="fcopy">© 2025 Veltron Group of Companies</span>
 </footer>
 
@@ -742,21 +763,14 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
 <a href="https://wa.me/917845763698?text=Hi%2C+interested+in+Veltron+Group" target="_blank" id="wa" title="WhatsApp">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
-<button id="chatbtn" onclick="toggleChat()">💬</button>
+<button id="chatbtn" onclick="toggleChat()" style="display:none">💬</button>
 <div id="chatw">
   <div class="ch"><div class="ct"><span class="con"></span>Veltron AI</div><button class="cc" onclick="toggleChat()">✕</button></div>
   <div class="cmsgs" id="cmsgs"><div class="cm bot">👋 Hey! I'm Veltron AI. Ask me anything about our products or company.</div></div>
   <div class="cinput"><input class="ci" id="cinput" placeholder="Ask about Veltron..." onkeydown="if(event.key==='Enter')sendChat()"><button class="cs" onclick="sendChat()">↑</button></div>
 </div>
 
-<!-- COOKIE BANNER -->
-<div id="cookie">
-  <div class="cookie-text">We use cookies to improve your experience. By continuing, you agree to our <a href="#">Privacy Policy</a>.</div>
-  <div class="cookie-btns">
-    <button class="cookie-acc" onclick="document.getElementById('cookie').remove()">Accept all</button>
-    <button class="cookie-dec" onclick="document.getElementById('cookie').remove()">Decline</button>
-  </div>
-</div>
+<!-- COOKIE BANNER (see #ck below) -->
 
 <script>
 // CURSOR
@@ -802,11 +816,18 @@ function toggleDrawer(){const o=document.getElementById('drawer').classList.togg
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.getElementById('overlay').classList.remove('on')}
 
 // WAITLIST
-function joinWaitlist(){
+function joinWaitlist(e){
+  e.preventDefault();
   const email=document.getElementById('wl-email').value.trim();
-  if(!email||!email.includes('@'))return;
+  if(!email||!email.includes('@'))return false;
+  fetch('https://formsubmit.co/ajax/veltrongroupai@gmail.com',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({Email:email,_subject:'New waitlist signup — Veltron Group website'})
+  }).catch(()=>{});
   document.getElementById('wl-form').style.display='none';
   document.getElementById('wl-success').style.display='block';
+  return false;
 }
 
 // CHATBOT
@@ -818,10 +839,10 @@ async function sendChat(){
   const um=document.createElement('div');um.className='cm usr';um.textContent=txt;msgs.appendChild(um);
   const ty=document.createElement('div');ty.className='cm bot typing';ty.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';msgs.appendChild(ty);msgs.scrollTop=msgs.scrollHeight;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,system:`You are Veltron AI on the Veltron Group website. Be helpful, concise, enthusiastic. Key facts: Veltron Group is a global AI company building 4 AI products — Academic Twin (flagship, live build: RAG chat, quizzes, flashcards, analytics, study planner using Next.js/Supabase/Pinecone/Gemini), Health AI, WorkOS, FinAI. Founded by Dinesh from Chennai India. Seed stage. invest@veltrongroup.ai / hello@veltrongroup.ai. Keep responses under 3 sentences.`,messages:[{role:'user',content:txt}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,system:`You are Veltron AI on the Veltron Group website. Be helpful, concise, enthusiastic. Key facts: Veltron Group is a global AI company building 4 AI products — Academic Twin (flagship, live build: RAG chat, quizzes, flashcards, analytics, study planner using Next.js/Supabase/Pinecone/Gemini), Health AI, WorkOS, FinAI. Founded by Dinesh from Chennai India. Pre-seed stage. Contact: veltrongroupai@gmail.com. Keep responses under 3 sentences.`,messages:[{role:'user',content:txt}]})});
     const d=await res.json();ty.remove();
-    const bm=document.createElement('div');bm.className='cm bot';bm.textContent=d.content?.[0]?.text||'Reach us at hello@veltrongroup.ai!';msgs.appendChild(bm);
-  }catch(e){ty.remove();const bm=document.createElement('div');bm.className='cm bot';bm.textContent='Something went wrong — email hello@veltrongroup.ai!';msgs.appendChild(bm);}
+    const bm=document.createElement('div');bm.className='cm bot';bm.textContent=d.content?.[0]?.text||'Reach us at veltrongroupai@gmail.com!';msgs.appendChild(bm);
+  }catch(e){ty.remove();const bm=document.createElement('div');bm.className='cm bot';bm.textContent='Something went wrong — email veltrongroupai@gmail.com!';msgs.appendChild(bm);}
   msgs.scrollTop=msgs.scrollHeight;
 }
 </script>
