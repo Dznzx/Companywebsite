@@ -7,12 +7,12 @@
 <meta name="description" content="Veltron Group builds AI products for students, professionals and businesses — across every sector, on every continent.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <meta property="og:title" content="Veltron Group — AI for Everyone">
-<meta property="og:description" content="Academic Twin, Health AI, WorkOS, FinAI — AI built for the world.">
+<meta property="og:description" content="Academic Twin, CivicSetu, MedWatch, SpendWise, AI Student Analytics — AI built for the world.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="favicon.svg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Veltron Group — AI for Everyone">
-<meta name="twitter:description" content="Academic Twin, Health AI, WorkOS, FinAI — AI built for the world.">
+<meta name="twitter:description" content="Academic Twin, CivicSetu, MedWatch, SpendWise, AI Student Analytics — AI built for the world.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -288,41 +288,6 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   .tech-strip{padding:32px 20px} .tech-logos{gap:28px}
 }
 
-/* PROJECTS */
-#projects{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border-radius:20px;overflow:hidden;border:1px solid var(--border);margin-top:64px}
-.proj-card{background:var(--bg);padding:36px;position:relative;overflow:hidden;transition:background .4s}
-.proj-card:hover{background:var(--s2)}
-.proj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:opacity .5s}
-.proj-card:hover::before{opacity:1}
-.proj-card.featured{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-.proj-status{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:18px}
-.proj-status.live{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.2)}
-.proj-status.wip{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.15)}
-.proj-name{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:-.03em;margin-bottom:10px}
-.proj-desc{font-size:.875rem;color:var(--muted2);line-height:1.7;font-weight:300;margin-bottom:18px;max-width:380px}
-.proj-stack{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
-.pstag{font-size:11px;padding:3px 10px;border-radius:100px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.02)}
-.proj-links{display:flex;gap:12px;flex-wrap:wrap}
-.proj-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:7px 16px;border-radius:8px;text-decoration:none;transition:all .2s}
-.proj-link.primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 0 20px rgba(91,127,255,.2)}
-.proj-link.primary:hover{box-shadow:0 0 32px rgba(91,127,255,.45);transform:translateY(-1px)}
-.proj-link.ghost{border:1px solid var(--border2);color:var(--white);background:rgba(255,255,255,.03)}
-.proj-link.ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
-.proj-visual{border-radius:16px;background:linear-gradient(135deg,rgba(91,127,255,.1),rgba(139,92,246,.06));border:1px solid rgba(91,127,255,.12);padding:24px;position:relative;overflow:hidden}
-.proj-visual::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(91,127,255,.15),transparent 60%);pointer-events:none}
-.proj-metric{display:flex;flex-direction:column;gap:12px}
-.pm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px}
-.pm-label{font-size:11px;color:var(--muted2)}
-.pm-val{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700}
-.pm-val.good{color:var(--green)}
-.pm-val.warn{color:#fbbf24}
-.pm-val.blue{color:var(--blue)}
-@media(max-width:900px){
-  .proj-grid{grid-template-columns:1fr}
-  .proj-card.featured{grid-column:span 1;grid-template-columns:1fr}
-  .proj-visual{display:none}
-}
 </style>
 <style>.pgf{position:fixed;inset:0;background:#04060f;z-index:99996;pointer-events:none;opacity:0;transition:opacity .35s ease}.pgf.out{opacity:1;pointer-events:all}</style>
 </head>
@@ -336,7 +301,6 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   <a href="#products" class="drawer-link" onclick="closeDrawer()">Products</a>
   <a href="#services" class="drawer-link" onclick="closeDrawer()">Services</a>
   <a href="#custom-builds" class="drawer-link" onclick="closeDrawer()">Custom Builds</a>
-  <a href="#projects" class="drawer-link" onclick="closeDrawer()">Projects</a>
   <a href="#founder" class="drawer-link" onclick="closeDrawer()">Founder</a>
   <a href="#investors" class="drawer-link" onclick="closeDrawer()">Investors</a>
   <a href="#contact" class="drawer-link" onclick="closeDrawer()">Contact</a>
@@ -350,7 +314,6 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
     <li><a href="#products">Products</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#custom-builds">Custom Builds</a></li>
-    <li><a href="#projects">Projects</a></li>
     <li><a href="#founder">Founder</a></li>
     <li><a href="#investors">Investors</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -371,14 +334,14 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
     <a href="#products" class="btn-p">Explore products <span class="arr">→</span></a>
     <a href="#vision" class="btn-g">Our vision <span class="arr">↓</span></a>
   </div>
-  <div class="hbadge"><div class="hbadge-inner"><span class="hb-dot"></span>Academic Twin — live build · 4 products in pipeline</div></div>
+  <div class="hbadge"><div class="hbadge-inner"><span class="hb-dot"></span>5 products live · built and shipped</div></div>
 </section>
 
 <!-- TICKER -->
 <div class="ticker">
   <div class="ticker-track">
-    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>Health AI</div><div class="ticker-item"><span class="sep">✦</span>WorkOS</div><div class="ticker-item"><span class="sep">✦</span>FinAI</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
-    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>Health AI</div><div class="ticker-item"><span class="sep">✦</span>WorkOS</div><div class="ticker-item"><span class="sep">✦</span>FinAI</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
+    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>CivicSetu</div><div class="ticker-item"><span class="sep">✦</span>MedWatch</div><div class="ticker-item"><span class="sep">✦</span>SpendWise</div><div class="ticker-item"><span class="sep">✦</span>AI Student Analytics</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · GovTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
+    <div class="ticker-item"><span class="sep">✦</span>Academic Twin</div><div class="ticker-item"><span class="sep">✦</span>CivicSetu</div><div class="ticker-item"><span class="sep">✦</span>MedWatch</div><div class="ticker-item"><span class="sep">✦</span>SpendWise</div><div class="ticker-item"><span class="sep">✦</span>AI Student Analytics</div><div class="ticker-item"><span class="sep">✦</span>Retrieval-Augmented Generation</div><div class="ticker-item"><span class="sep">✦</span>Large Language Models</div><div class="ticker-item"><span class="sep">✦</span>EdTech · GovTech · HealthTech · FinTech</div><div class="ticker-item"><span class="sep">✦</span>Built for the world</div>
   </div>
 </div>
 
@@ -399,7 +362,7 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
 <section id="products" class="sec">
   <div class="prod-intro rv">
     <div><span class="sec-label">Our products</span><h2 class="sec-title">AI built for<br>real problems.</h2></div>
-    <p class="sec-sub" style="max-width:300px">Four products. Four sectors. One company built for the whole world.</p>
+    <p class="sec-sub" style="max-width:300px">Five live products across five sectors. Built and shipped, not just planned.</p>
   </div>
   <div class="bento rv d1">
     <div class="bcard split featured span2">
@@ -414,33 +377,36 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
       <div class="bcard-visual"><div class="vis-text">AT</div></div>
     </div>
     <div class="bcard">
-      <span class="bcard-tag tag-soon">◐ Coming soon</span>
-      <span class="bcard-icon">🩺</span>
-      <div class="bcard-name">Veltron Health AI</div>
-      <p class="bcard-desc">Your personal AI health companion — symptom analysis, medication reminders, wellness tracking, and doctor-visit prep. Built for markets with limited specialist access.</p>
-      <div class="bcard-tags"><span class="btag">HealthTech</span><span class="btag">B2C</span><span class="btag">Multi-language</span></div>
-      <a href="health-ai.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
+      <span class="bcard-tag tag-live">● Live</span>
+      <span class="bcard-icon">🏛️</span>
+      <div class="bcard-name">CivicSetu</div>
+      <p class="bcard-desc">Civic complaints don't just get logged — they get clustered, routed to whoever can actually act, and tracked to resolution. Bilingual PWA with AI-assisted triage.</p>
+      <div class="bcard-tags"><span class="btag">GovTech</span><span class="btag">PWA</span><span class="btag">Bilingual</span><span class="btag">Supabase</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><a href="https://civicsetu-seven.vercel.app" target="_blank" class="bcard-link" style="margin-top:0;color:var(--green);border-color:rgba(74,222,128,.3)">Open app ↗</a><a href="https://github.com/Dznzx/civicsetu" target="_blank" class="bcard-link" style="margin-top:0">GitHub ↗</a></div>
     </div>
     <div class="bcard">
-      <span class="bcard-tag tag-soon">◐ Coming soon</span>
-      <span class="bcard-icon">⚡</span>
-      <div class="bcard-name">Veltron WorkOS</div>
-      <p class="bcard-desc">AI-native workplace suite for modern teams. Meeting summaries, task automation, document drafting — built for SMEs who can't afford enterprise tooling.</p>
-      <div class="bcard-tags"><span class="btag">Productivity</span><span class="btag">B2B SaaS</span><span class="btag">API integrations</span></div>
-      <a href="workos.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
+      <span class="bcard-tag tag-live">● Live</span>
+      <span class="bcard-icon">🩺</span>
+      <div class="bcard-name">MedWatch</div>
+      <p class="bcard-desc">Regional medicine shortage early-warning dashboard — forecasts stockouts per facility, flags regional risk patterns, and recommends surplus-to-shortage redistribution.</p>
+      <div class="bcard-tags"><span class="btag">HealthTech</span><span class="btag">Forecasting</span><span class="btag">Next.js</span><span class="btag">Groq</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><a href="https://manipal-hackathon-medwatch.vercel.app" target="_blank" class="bcard-link" style="margin-top:0;color:var(--green);border-color:rgba(74,222,128,.3)">Open app ↗</a><a href="https://github.com/Dznzx/manipal-hackathon-medwatch" target="_blank" class="bcard-link" style="margin-top:0">GitHub ↗</a></div>
     </div>
-    <div class="bcard span2" style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
-      <div>
-        <span class="bcard-tag tag-future">◯ Future</span>
-        <span class="bcard-icon" style="margin-top:8px">📈</span>
-        <div class="bcard-name">Veltron FinAI</div>
-        <p class="bcard-desc">Personal finance AI for the next billion — budgeting, investment analysis, tax planning, and financial literacy for emerging markets where financial advisory is inaccessible.</p>
-        <div class="bcard-tags"><span class="btag">FinTech</span><span class="btag">B2C + B2B</span><span class="btag">Emerging markets</span></div>
-        <a href="finai.html" class="bcard-link">Visit product page <span class="icon">→</span></a>
-      </div>
-      <div style="border-radius:16px;background:linear-gradient(135deg,rgba(74,222,128,.07),rgba(34,211,238,.04));border:1px solid rgba(74,222,128,.1);height:160px;display:flex;align-items:center;justify-content:center">
-        <span style="font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹$£</span>
-      </div>
+    <div class="bcard">
+      <span class="bcard-tag tag-live">● Live</span>
+      <span class="bcard-icon">💰</span>
+      <div class="bcard-name">SpendWise</div>
+      <p class="bcard-desc">See the trade-off before you spend. Tell it what you're saving for — before your next impulse buy, it shows exactly what that purchase costs you, in plain terms.</p>
+      <div class="bcard-tags"><span class="btag">FinTech</span><span class="btag">B2C</span><span class="btag">Gemini</span></div>
+      <a href="https://spendwise-omega-eight.vercel.app" target="_blank" class="bcard-link" style="color:var(--green);border-color:rgba(74,222,128,.3)">Open app ↗</a>
+    </div>
+    <div class="bcard">
+      <span class="bcard-tag tag-live">● Live</span>
+      <span class="bcard-icon">📊</span>
+      <div class="bcard-name">AI Student Analytics</div>
+      <p class="bcard-desc">Predicts student at-risk levels from performance data using three ML models with explainable AI — real-time dashboards built for institutions.</p>
+      <div class="bcard-tags"><span class="btag">EdTech</span><span class="btag">XAI</span><span class="btag">FastAPI</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><a href="student-analytics.html" class="bcard-link" style="margin-top:0">Product page <span class="icon">→</span></a><a href="https://ai-student-analytics.vercel.app" target="_blank" class="bcard-link" style="margin-top:0;color:var(--green);border-color:rgba(74,222,128,.3)">Open app ↗</a></div>
     </div>
   </div>
 </section>
@@ -483,80 +449,6 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
         <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap"><a href="#contact" class="bcard-link" style="margin-top:0">Tell us your problem <span class="icon">→</span></a></div>
       </div>
       <div class="bcard-visual"><div class="vis-text">CB</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW -->
-
-<!-- PROJECTS -->
-<section id="projects" class="sec">
-  <div class="rv" style="text-align:left;max-width:none">
-    <span class="sec-label">Live projects</span>
-    <h2 class="sec-title">Built and shipped.</h2>
-    <p class="sec-sub">Real applications deployed in production — not just side projects.</p>
-  </div>
-  <div class="proj-grid rv d1">
-    <!-- AI Student Analytics — featured -->
-    <div class="proj-card featured">
-      <div>
-        <span class="proj-status live">● Live · Deployed</span>
-        <div class="proj-name">AI Student Analytics &amp; Risk Prediction System</div>
-        <p class="proj-desc">A production-grade educational analytics platform that predicts student at-risk levels using 3 ML models with Explainable AI — built and deployed entirely independently as a 1st-year student.</p>
-        <div class="proj-stack">
-          <span class="pstag">React.js</span>
-          <span class="pstag">FastAPI</span>
-          <span class="pstag">PostgreSQL</span>
-          <span class="pstag">Scikit-learn</span>
-          <span class="pstag">XAI</span>
-          <span class="pstag">Vercel</span>
-          <span class="pstag">Render</span>
-          <span class="pstag">Neon Cloud</span>
-        </div>
-        <div class="proj-links">
-          <a href="student-analytics.html" class="proj-link primary">Product page →</a>
-          <a href="https://ai-student-analytics.vercel.app" target="_blank" class="proj-link ghost">Live app ↗</a>
-          <a href="https://github.com/Dznzx/ai-student-analytics" target="_blank" class="proj-link ghost">GitHub ↗</a>
-        </div>
-      </div>
-      <div class="proj-visual">
-        <div class="proj-metric">
-          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px">Model Performance</div>
-          <div class="pm-row"><span class="pm-label">Random Forest Accuracy</span><span class="pm-val good">94.2%</span></div>
-          <div class="pm-row"><span class="pm-label">Logistic Regression</span><span class="pm-val blue">91.8%</span></div>
-          <div class="pm-row"><span class="pm-label">Decision Tree</span><span class="pm-val blue">89.4%</span></div>
-          <div class="pm-row"><span class="pm-label">XAI Features</span><span class="pm-val good">ROC · Confusion Matrix · Feature Importance</span></div>
-          <div class="pm-row"><span class="pm-label">Deployment</span><span class="pm-val good">Live on Vercel + Render</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Academic Twin — coming soon project card -->
-    <div class="proj-card">
-      <span class="proj-status wip">⟳ In Development</span>
-      <div class="proj-name">Academic Twin</div>
-      <p class="proj-desc">AI-powered personalized learning platform — RAG-based document chat, auto quiz generation, flashcards, analytics, and adaptive study planner.</p>
-      <div class="proj-stack">
-        <span class="pstag">Next.js 14</span>
-        <span class="pstag">Supabase</span>
-        <span class="pstag">Pinecone</span>
-        <span class="pstag">Gemini</span>
-        <span class="pstag">Clerk</span>
-        <span class="pstag">RAG</span>
-      </div>
-      <div class="proj-links">
-        <a href="academic-twin.html" class="proj-link primary">Product page →</a>
-        <a href="https://academic-twin-rouge.vercel.app" target="_blank" class="proj-link ghost">Open app ↗</a>
-        <a href="https://github.com/Dznzx/academic-twin-2" target="_blank" class="proj-link ghost">GitHub ↗</a>
-      </div>
-    </div>
-
-    <!-- More coming -->
-    <div class="proj-card" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background:repeating-linear-gradient(-45deg,var(--bg),var(--bg) 10px,var(--s1) 10px,var(--s1) 20px)">
-      <span class="proj-status wip" style="margin-bottom:20px">⟳ More coming</span>
-      <div class="proj-name" style="font-size:1.1rem;color:var(--muted2)">More projects in the pipeline</div>
-      <p class="proj-desc" style="font-size:.825rem">Health AI, WorkOS, FinAI — each will be a live deployed product. Follow progress on GitHub.</p>
-      <a href="https://github.com/Dznzx" target="_blank" class="proj-link ghost" style="margin-top:4px">Follow on GitHub ↗</a>
     </div>
   </div>
 </section>
@@ -626,11 +518,11 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
     <div class="founder-right">
       <h2 class="sec-title" style="font-size:2.2rem;margin-bottom:24px">Built from frustration.</h2>
       <p class="fp">I'm a student developer who got tired of watching powerful AI tools stay locked behind paywalls — while the students, workers, and businesses who need them most couldn't afford access.</p>
-      <p class="fp">Veltron Group started with a single question: <em>what if the best AI products were built for everyone?</em> Academic Twin is the first answer. Health AI, WorkOS, and FinAI are next.</p>
+      <p class="fp">Veltron Group started with a single question: <em>what if the best AI products were built for everyone?</em> Academic Twin was the first answer. CivicSetu, MedWatch, SpendWise, and AI Student Analytics followed.</p>
       <p class="fp">Building from Chennai, India — with a global market in mind and zero plans to slow down.</p>
       <div class="fstats">
-        <div><div class="fstat-v">4+</div><div class="fstat-l">AI products building</div></div>
-        <div><div class="fstat-v">1</div><div class="fstat-l">Live flagship</div></div>
+        <div><div class="fstat-v">5</div><div class="fstat-l">Live products</div></div>
+        <div><div class="fstat-v">5</div><div class="fstat-l">Sectors reached</div></div>
         <div><div class="fstat-v">∞</div><div class="fstat-l">Ambition</div></div>
       </div>
     </div>
@@ -642,7 +534,7 @@ footer{padding:32px 48px;border-top:1px solid var(--border);display:flex;align-i
   <div class="rv"><span class="sec-label">For investors</span><h2 class="sec-title">Back the next frontier.</h2></div>
   <div class="inv-layout rv d1">
     <div>
-      <p class="sec-sub" style="margin-bottom:32px">Veltron Group is building toward its first funding round to accelerate Academic Twin and fund development of the next two products. Open to conversations with angels and early-stage investors who believe AI should work for the whole world.</p>
+      <p class="sec-sub" style="margin-bottom:32px">Veltron Group is building toward its first funding round to scale its five live products and fund what comes next. Open to conversations with angels and early-stage investors who believe AI should work for the whole world.</p>
       <a href="mailto:veltrongroupai@gmail.com" class="btn-p">Request pitch deck <span class="arr">→</span></a>
     </div>
     <div class="inv-stats">

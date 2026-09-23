@@ -13,13 +13,11 @@ The Veltron Group marketing site — a static, multi-page portfolio for the comp
 
 | Page | Purpose |
 |---|---|
-| `index.html` | Company homepage — products, services, custom builds, projects, founder, investors, waitlist, contact |
+| `index.html` | Company homepage — products, services, custom builds, founder, investors, waitlist, contact |
 | `academic-twin.html` | Product page for Academic Twin (live) |
-| `health-ai.html` | Product page for Veltron Health AI (coming soon) |
-| `workos.html` | Product page for Veltron WorkOS (coming soon) |
-| `finai.html` | Product page for Veltron FinAI (future) |
 | `student-analytics.html` | Product page for AI Student Analytics (live) |
-| `ai-products.html` | Alternate/legacy products overview page |
+
+CivicSetu, MedWatch, and SpendWise are listed as products on the homepage but link straight out to their own live apps and repos rather than having a dedicated page here.
 
 ## Stack
 
